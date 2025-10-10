@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PaymentPlanCard } from "@/components/PaymentPlanCard";
-import { FlexiblePaymentPlanCard } from "@/components/FlexiblePaymentPlanCard";
+import { FlexiblePaymentPlanCard, SharedInvestmentOption } from "@/components/FlexiblePaymentPlanCard";
 import { InvestmentCompletePlanCard } from "@/components/InvestmentCompletePlanCard";
 import { EmailSubmissionForm } from "@/components/EmailSubmissionForm";
 import logoGW from "@/assets/globalworking-logo.png";
@@ -39,9 +39,11 @@ const servicesList = [
 interface PlanSelection {
   id: string;
   title: string;
-  price: string;
+  variantName?: string;
   monthlyPayment: string;
   amortization: string;
+  totalInvestment?: number;
+  notes?: string;
   paymentMethod?: string;
   numberOfInstallments?: number;
 }
@@ -54,41 +56,31 @@ const Index = () => {
     setSelectedPlan({
       id: "financiacion-total",
       title: "Financiación Total",
-      price: "0€",
-      monthlyPayment: "Sin pago inicial",
-      amortization: "30 meses",
-      paymentMethod: "N/A",
-      numberOfInstallments: 0,
+      monthlyPayment: "0€ al mes",
+      amortization: "30 meses en la RedGW",
+      totalInvestment: 0,
+      notes: "No pagas nada durante la formación y amortizas la inversión trabajando 30 meses en la Red Global Working.",
     });
   };
 
-  const handleInversionCompartida = (
-    price: number,
-    amortization: number,
-    paymentMethod: string,
-    installments: number
-  ) => {
+  const handleInversionCompartida = (plan: SharedInvestmentOption) => {
     setSelectedPlan({
-      id: "inversion-compartida",
+      id: `inversion-compartida-${plan.key}`,
       title: "Inversión Compartida",
-      price: `${price.toLocaleString()}€`,
-      monthlyPayment: `${(price / installments).toFixed(2)}€/mes`,
-      amortization: `${amortization} meses`,
-      paymentMethod,
-      numberOfInstallments: installments,
+      variantName: plan.name,
+      monthlyPayment: `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`,
+      amortization: `${plan.amortization} meses en la RedGW`,
+      notes: plan.description,
     });
   };
 
-  const handleInversionCompleta = (paymentMethod: string, installments: number) => {
-    const totalPrice = 5300;
+  const handleInversionCompleta = () => {
     setSelectedPlan({
       id: "inversion-completa",
       title: "Inversión Completa",
-      price: `${totalPrice.toLocaleString()}€`,
-      monthlyPayment: `${(totalPrice / installments).toFixed(2)}€${installments === 1 ? "" : "/mes"}`,
-      amortization: "0 meses",
-      paymentMethod,
-      numberOfInstallments: installments,
+      monthlyPayment: "1.325€ al mes",
+      amortization: "0 meses en la RedGW",
+      notes: "Accedes a toda la formación y acompañamiento sin compromiso de permanencia ni amortización.",
     });
   };
 
@@ -110,9 +102,9 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary via-primary to-accent py-20 overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: `url(${norwayHero})` }}
+          style={{ backgroundImage: "url(" + norwayHero + ")" }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/75 to-accent/80"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMm0tNCAwYzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMm0tNCAwYzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMiIvPjwvZz48L2c+PC9zdmc+')] opacity-10"></div>
@@ -150,9 +142,26 @@ const Index = () => {
                   Elige tu Modelo de Inversión
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Selecciona el modelo que mejor se adapte a tus necesidades. 
+                  Selecciona el modelo que mejor se adapte a tus necesidades.
                   A mayor inversión inicial, menor período de amortización en destino.
                 </p>
+              </div>
+
+              <div className="mx-auto mb-10 max-w-4xl rounded-xl border border-accent/40 bg-accent/10 p-6">
+                <h3 className="text-center text-xl font-semibold text-foreground">
+                  Todos los modelos incluyen los mismos servicios
+                </h3>
+                <p className="mt-2 text-center text-sm text-muted-foreground">
+                  Cada modalidad incorpora la formación completa y el acompañamiento integral que necesitas para ejercer en Noruega.
+                </p>
+                <ul className="mt-4 grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
+                  {servicesList.map((service) => (
+                    <li key={service} className="flex items-start gap-2">
+                      <span className="mt-1 h-2 w-2 rounded-full bg-accent"></span>
+                      <span>{service}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
@@ -160,6 +169,9 @@ const Index = () => {
                 <PaymentPlanCard
                   title="Financiación Total"
                   features={servicesList}
+                  monthlyPayment="0€ al mes"
+                  amortization="30 meses en la RedGW"
+                  note="La inversión se amortiza exclusivamente con tu trabajo en Noruega."
                   onSelect={handleFinanciacionTotal}
                 />
 

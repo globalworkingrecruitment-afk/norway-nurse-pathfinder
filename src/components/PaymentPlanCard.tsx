@@ -1,10 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Calendar, PiggyBank } from "lucide-react";
 
 interface PaymentPlanCardProps {
   title: string;
   features: string[];
+  monthlyPayment?: string;
+  amortization?: string;
+  note?: string;
   recommended?: boolean;
   onSelect: () => void;
 }
@@ -12,11 +15,14 @@ interface PaymentPlanCardProps {
 export const PaymentPlanCard = ({
   title,
   features,
+  monthlyPayment,
+  amortization,
+  note,
   recommended = false,
   onSelect,
 }: PaymentPlanCardProps) => {
   return (
-    <Card 
+    <Card
       className={`relative transition-all hover:shadow-lg ${
         recommended ? 'border-accent border-2 shadow-md' : ''
       }`}
@@ -30,6 +36,35 @@ export const PaymentPlanCard = ({
         <CardTitle className="text-xl">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {(monthlyPayment || amortization || note) && (
+          <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-4">
+            {monthlyPayment && (
+              <div className="flex items-start gap-2">
+                <PiggyBank className="mt-0.5 h-5 w-5 text-accent" />
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Pago mensual
+                  </p>
+                  <p className="text-base font-semibold text-foreground">{monthlyPayment}</p>
+                </div>
+              </div>
+            )}
+            {amortization && (
+              <div className="flex items-start gap-2">
+                <Calendar className="mt-0.5 h-5 w-5 text-primary" />
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Compromiso en la RedGW
+                  </p>
+                  <p className="text-base font-semibold text-foreground">{amortization}</p>
+                </div>
+              </div>
+            )}
+            {note && (
+              <p className="text-sm text-muted-foreground">{note}</p>
+            )}
+          </div>
+        )}
         <ul className="space-y-2 text-left">
           {features.map((feature, index) => (
             <li key={index} className="flex items-start gap-2 text-sm">
