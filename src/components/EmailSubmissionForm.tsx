@@ -12,9 +12,11 @@ interface EmailSubmissionFormProps {
   selectedPlan: {
     id: string;
     title: string;
-    price: string;
+    variantName?: string;
     monthlyPayment: string;
     amortization: string;
+    totalInvestment?: number;
+    notes?: string;
     paymentMethod?: string;
     numberOfInstallments?: number;
   };
@@ -26,6 +28,14 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const parseCurrency = (value: string) => {
+    const match = value.match(/[\d.,]+/);
+    if (!match) return 0;
+    const normalized = match[0].replace(/\./g, "").replace(",", ".");
+    const result = parseFloat(normalized);
+    return Number.isNaN(result) ? 0 : result;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,24 +52,22 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
     setLoading(true);
 
     try {
-      // Extraer datos del plan
-      const totalPrice = parseFloat(selectedPlan.price.replace(/[€.,]/g, ""));
-      
-      // Extraer pago mensual del texto
-      const monthlyPaymentMatch = selectedPlan.monthlyPayment.match(/^([\d.,]+)€/);
-      const monthlyPayment = monthlyPaymentMatch 
-        ? parseFloat(monthlyPaymentMatch[1].replace(/[.,]/g, ""))
-        : 0;
-      
+      const totalPrice = selectedPlan.totalInvestment ?? 0;
+      const monthlyPayment = parseCurrency(selectedPlan.monthlyPayment);
+
       // Extraer meses de amortización (compromiso laboral)
       const amortizationMonths = parseInt(selectedPlan.amortization.match(/\d+/)?.[0] || "0");
+
+      const planTitle = selectedPlan.variantName
+        ? `${selectedPlan.title} - ${selectedPlan.variantName}`
+        : selectedPlan.title;
 
       // Guardar en la base de datos
       const { error } = await supabase.from("registrations").insert({
         name,
         email,
         plan_id: selectedPlan.id,
-        plan_title: selectedPlan.title,
+        plan_title: planTitle,
         total_price: totalPrice,
         monthly_payment: monthlyPayment,
         amortization_months: amortizationMonths,
@@ -112,6 +120,11 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           </div>
           <CardDescription className="text-primary-foreground/90 text-lg">
             Has seleccionado: <span className="font-bold text-white">{selectedPlan.title}</span>
+            {selectedPlan.variantName && (
+              <span className="block text-base text-primary-foreground/80">
+                Modalidad: {selectedPlan.variantName}
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
         
@@ -125,33 +138,39 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                   <DollarSign className="w-5 h-5 text-accent" />
                   Detalles del Plan
                 </h3>
-                <div className="space-y-3 bg-muted/50 p-4 rounded-lg border">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Precio Total</span>
-                    <span className="font-bold text-lg text-foreground">{selectedPlan.price}</span>
+                <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Pago mensual</span>
+                    <span className="text-lg font-semibold text-accent">{selectedPlan.monthlyPayment}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Pago Mensual</span>
-                    <span className="font-semibold text-accent">{selectedPlan.monthlyPayment}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      Amortización
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" /> Compromiso en la RedGW
                     </span>
                     <span className="font-semibold">{selectedPlan.amortization}</span>
                   </div>
+                  {selectedPlan.totalInvestment !== undefined && selectedPlan.totalInvestment > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Inversión directa estimada</span>
+                      <span className="text-lg font-bold text-foreground">
+                        {selectedPlan.totalInvestment.toLocaleString("es-ES")}€
+                      </span>
+                    </div>
+                  )}
                   {selectedPlan.paymentMethod && selectedPlan.paymentMethod !== "N/A" && (
-                    <>
-                      <div className="flex justify-between items-center pt-2 border-t">
-                        <span className="text-sm text-muted-foreground">Método de Pago</span>
-                        <span className="font-semibold text-primary">{selectedPlan.paymentMethod}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Nº Mensualidades</span>
-                        <span className="font-semibold text-accent">{selectedPlan.numberOfInstallments}</span>
-                      </div>
-                    </>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Método de pago</span>
+                      <span className="font-semibold text-primary">{selectedPlan.paymentMethod}</span>
+                    </div>
+                  )}
+                  {selectedPlan.numberOfInstallments && selectedPlan.numberOfInstallments > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Nº de mensualidades</span>
+                      <span className="font-semibold text-accent">{selectedPlan.numberOfInstallments}</span>
+                    </div>
+                  )}
+                  {selectedPlan.notes && (
+                    <p className="text-sm text-muted-foreground">{selectedPlan.notes}</p>
                   )}
                 </div>
               </div>
@@ -161,59 +180,62 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                   <TrendingUp className="w-5 h-5 text-accent" />
                   Retorno de Inversión (ROI)
                 </h3>
-                <div className="space-y-3 bg-muted/50 p-4 rounded-lg border">
-                  {/* Main ROI Message - Highlighted */}
-                  <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-6 rounded-lg border-2 border-green-500/40">
-                    <div className="text-center space-y-3">
-                      <p className="text-sm font-medium text-foreground">
-                        💰 Recuperación de tu inversión de {selectedPlan.price}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="bg-white/50 dark:bg-black/30 p-4 rounded-lg">
-                          <p className="text-xs text-muted-foreground mb-1">Trabajando en Noruega necesitas:</p>
-                          <p className="text-4xl font-bold text-green-600 dark:text-green-400">
-                            ~{Math.ceil(parseFloat(selectedPlan.price.replace(/[€.]/g, '')) / 161)} días
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">de trabajo para recuperar tu inversión completa</p>
-                        </div>
-                        <div className="text-sm text-foreground font-medium">
-                          ¡En menos de {(Math.ceil(parseFloat(selectedPlan.price.replace(/[€.]/g, '')) / 161) / 22).toFixed(1)} meses habrás recuperado el 100% de tu inversión!
+                <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
+                  {selectedPlan.totalInvestment && selectedPlan.totalInvestment > 0 ? (
+                    <div className="space-y-4 rounded-lg border-2 border-green-500/40 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-6">
+                      <div className="space-y-3 text-center">
+                        <p className="text-sm font-medium text-foreground">
+                          💰 Recuperación de tu inversión de {selectedPlan.totalInvestment.toLocaleString("es-ES")}€
+                        </p>
+                        <div className="space-y-2">
+                          <div className="rounded-lg bg-white/50 p-4 dark:bg-black/30">
+                            <p className="mb-1 text-xs text-muted-foreground">Trabajando en Noruega necesitas:</p>
+                            <p className="text-4xl font-bold text-green-600 dark:text-green-400">
+                              ~{Math.ceil((selectedPlan.totalInvestment || 0) / 161)} días
+                            </p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              de trabajo para recuperar tu inversión completa
+                            </p>
+                          </div>
+                          <div className="text-sm font-medium text-foreground">
+                            ¡En menos de {((Math.ceil((selectedPlan.totalInvestment || 0) / 161)) / 22).toFixed(1)} meses habrás recuperado el 100% de tu inversión!
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-3 rounded-lg border border-primary/30 bg-primary/5 p-5">
+                      <p className="text-sm font-semibold text-foreground">
+                        Este plan no requiere una inversión inicial cerrada. Tu compromiso principal es:
+                      </p>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li>📅 {selectedPlan.amortization}</li>
+                        <li>💶 {selectedPlan.monthlyPayment}</li>
+                        {selectedPlan.notes && <li>📝 {selectedPlan.notes}</li>}
+                      </ul>
+                    </div>
+                  )}
 
-                  {/* Salary Breakdown */}
                   <div className="space-y-3">
                     <p className="text-sm font-semibold text-foreground">📊 Desglose salarial en Noruega:</p>
-                    <div className="space-y-2 bg-white/50 dark:bg-black/30 p-4 rounded-lg">
-                      <div className="flex justify-between items-center">
+                    <div className="space-y-2 rounded-lg bg-white/50 p-4 dark:bg-black/30">
+                      <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">Salario bruto anual:</span>
                         <span className="text-sm font-semibold text-foreground">~51.282€</span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">Salario neto anual:</span>
                         <span className="text-sm font-semibold text-foreground">~36.923€</span>
                       </div>
-                      <div className="border-t pt-2 mt-2">
-                        <div className="flex justify-between items-center">
+                      <div className="mt-2 border-t pt-2">
+                        <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">Salario neto mensual:</span>
-                          <span className="text-base font-bold text-accent">~3.077€</span>
+                          <span className="text-sm font-semibold text-foreground">~3.077€</span>
                         </div>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-xs text-muted-foreground">Salario neto diario:</span>
-                          <span className="text-base font-bold text-accent">~161€/día</span>
-                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Estos cálculos están basados en la media salarial de enfermería en Noruega.
+                        </p>
                       </div>
-                    </div>
-                    
-                    <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-lg">
-                      <p className="text-xs text-foreground">
-                        <span className="font-semibold">✅ Cálculo simple:</span> Con un salario neto de ~161€ por día, 
-                        solo necesitas trabajar {Math.ceil(parseFloat(selectedPlan.price.replace(/[€.]/g, '')) / 161)} días 
-                        para recuperar tu inversión de {selectedPlan.price}. 
-                        <span className="font-bold text-blue-600 dark:text-blue-400"> Después de eso, todo lo que ganes es ganancia pura.</span>
-                      </p>
                     </div>
                   </div>
                 </div>
