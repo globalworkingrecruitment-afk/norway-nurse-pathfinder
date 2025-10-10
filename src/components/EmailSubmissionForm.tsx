@@ -29,6 +29,22 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  const isFinancingPlan = selectedPlan.id === "financiacion-total";
+
+  const financingGratuityRows = isFinancingPlan
+    ? [
+        {
+          label: "Descuento del que te beneficias por trabajar en la RedGW",
+          values: ["0€", "2.300€", "3.000€", "5.300€"],
+        },
+        {
+          label:
+            "% de descuento que recibes por trabajar en la RedGW como enfermera",
+          values: ["0%", "28,30%", "56,60%", "100%"],
+        },
+      ]
+    : [];
+
   const parseCurrency = (value: string) => {
     const match = value.match(/[\d.,]+/);
     if (!match) return 0;
@@ -340,70 +356,131 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             </div>
           </div>
 
-          {/* Full Width Contact Form Section */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold mb-4">Tus Datos de Contacto</h3>
-            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">
-                    Nombre completo *
-                  </Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Tu nombre completo"
-                    required
-                    className="transition-all duration-200 focus:scale-[1.01]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email *
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="tu@email.com"
-                    required
-                    className="transition-all duration-200 focus:scale-[1.01]"
-                  />
-                </div>
-
-                <div className="bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6">
-                  <p className="text-xs text-muted-foreground">
-                    Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo 
-                    para ofrecerte información sobre el programa seleccionado.
-                  </p>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={onBack} 
-                    className="flex-1 transition-all duration-200 hover:scale-[1.02]"
-                  >
-                    Volver
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={loading} 
-                    className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
-                  >
-                    {loading ? "Enviando..." : "Enviar solicitud"}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </div>
         </CardContent>
       </Card>
+
+      {isFinancingPlan && (
+        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-foreground">
+                Gratuidad de los servicios de Global Working
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Descubre cómo evoluciona el coste del programa en función de tu
+                permanencia en la Red Global Working.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+              <span>Precio del programa</span>
+              <span className="text-lg">5.300€</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-muted text-left">
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Escenario
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Trabajando como enfermera entre 5 y 12 meses en la RedGW
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Trabajando como enfermera entre 13 y 24 meses en la RedGW
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Trabajando como enfermera entre 25 y 30 meses en la RedGW
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Trabajando como enfermera más de 30 meses en la RedGW
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {financingGratuityRows.map((row) => (
+                  <tr key={row.label} className="border-t border-border">
+                    <th
+                      scope="row"
+                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
+                    >
+                      {row.label}
+                    </th>
+                    {row.values.map((value, index) => (
+                      <td key={`${row.label}-${index}`} className="px-4 py-4 text-sm text-muted-foreground">
+                        {value}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-10 rounded-xl border bg-muted/40 p-6">
+        <h3 className="text-lg font-semibold mb-4">Tus Datos de Contacto</h3>
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Nombre completo *
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Tu nombre completo"
+                required
+                className="transition-all duration-200 focus:scale-[1.01]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email *
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                required
+                className="transition-all duration-200 focus:scale-[1.01]"
+              />
+            </div>
+
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6">
+              <p className="text-xs text-muted-foreground">
+                Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo
+                para ofrecerte información sobre el programa seleccionado.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onBack}
+                className="flex-1 transition-all duration-200 hover:scale-[1.02]"
+              >
+                Volver
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
+              >
+                {loading ? "Enviando..." : "Enviar solicitud"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
