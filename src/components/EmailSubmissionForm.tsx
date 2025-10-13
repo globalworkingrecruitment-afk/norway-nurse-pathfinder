@@ -58,6 +58,24 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
 
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
 
+  const netMonthlySalary = 3077;
+  const workingDaysPerMonth = 22;
+  const netDailySalary = netMonthlySalary / workingDaysPerMonth;
+  const daysToRecoverInvestment = selectedPlan.totalInvestment
+    ? Math.ceil((selectedPlan.totalInvestment || 0) / netDailySalary)
+    : null;
+  const monthsToRecoverInvestment = daysToRecoverInvestment
+    ? (daysToRecoverInvestment / workingDaysPerMonth).toFixed(1)
+    : null;
+
+  const formatCurrency = (
+    value: number,
+    options: Intl.NumberFormatOptions = {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    },
+  ) => value.toLocaleString("es-ES", options);
+
   const financingGratuityRows: FinancingGratuityRow[] = isFinancingPlan
     ? [
         {
@@ -240,19 +258,27 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                         <p className="text-sm font-medium text-foreground">
                           💰 Recuperación de tu inversión de {selectedPlan.totalInvestment.toLocaleString("es-ES")}€
                         </p>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="rounded-lg bg-white/50 p-4 dark:bg-black/30">
                             <p className="mb-1 text-xs text-muted-foreground">Trabajando en Noruega necesitas:</p>
                             <p className="text-4xl font-bold text-green-600 dark:text-green-400">
-                              ~{Math.ceil((selectedPlan.totalInvestment || 0) / 161)} días
+                              ~{daysToRecoverInvestment ?? 0} días
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
                               de trabajo para recuperar tu inversión completa
                             </p>
                           </div>
-                          <div className="text-sm font-medium text-foreground">
-                            ¡En menos de {((Math.ceil((selectedPlan.totalInvestment || 0) / 161)) / 22).toFixed(1)} meses habrás recuperado el 100% de tu inversión!
-                          </div>
+                          {monthsToRecoverInvestment && (
+                            <div className="text-sm font-medium text-foreground">
+                              ¡En menos de {monthsToRecoverInvestment} meses habrás recuperado el 100% de tu inversión!
+                            </div>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            Esto equivale a un salario neto diario aproximado de {formatCurrency(netDailySalary, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}€ trabajando {workingDaysPerMonth} días al mes.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -280,12 +306,20 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                         <span className="text-xs text-muted-foreground">Salario neto anual:</span>
                         <span className="text-sm font-semibold text-foreground">~36.923€</span>
                       </div>
-                      <div className="mt-2 border-t pt-2">
+                      <div className="mt-2 border-t pt-2 space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">Salario neto mensual:</span>
-                          <span className="text-sm font-semibold text-foreground">~3.077€</span>
+                          <span className="text-sm font-semibold text-foreground">~{formatCurrency(netMonthlySalary)}€</span>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
+                          Salario neto diario aproximado: ~
+                          {formatCurrency(netDailySalary, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                          €
+                        </p>
+                        <p className="text-xs text-muted-foreground">
                           Estos cálculos están basados en la media salarial de enfermería en Noruega.
                         </p>
                       </div>
