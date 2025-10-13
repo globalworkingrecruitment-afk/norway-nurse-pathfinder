@@ -65,7 +65,6 @@ const Index = () => {
       type: "image",
       src: giuseppeNicolo,
       alt: "Giuseppe y Nicolò - Global Workers en Noruega",
-      wrapperClassName: "sm:row-span-2 md:row-span-2",
     },
     {
       type: "image",
@@ -76,7 +75,6 @@ const Index = () => {
       type: "image",
       src: lauraCopovi,
       alt: "Laura Copoví - Trabajando en Noruega",
-      wrapperClassName: "md:row-span-2",
     },
     {
       type: "image",
@@ -87,7 +85,6 @@ const Index = () => {
       type: "image",
       src: isaacSakrisoy,
       alt: "Isaac Calvo Valls - Sakrisøy, Noruega",
-      wrapperClassName: "md:row-span-2",
     },
     {
       type: "image",
@@ -95,22 +92,23 @@ const Index = () => {
       alt: "María Zamora - Global Working Enfermería Noruega",
     },
     {
-      type: "image",
-      src: promo90,
-      alt: "Promoción 90 - Global Workers",
-    },
-    {
-      type: "image",
-      src: grupoCertificados,
-      alt: "Grupo de certificados - Global Workers",
-      wrapperClassName: "sm:row-span-2",
+      type: "stack",
+      items: [
+        {
+          src: promo90,
+          alt: "Promoción 90 - Global Workers",
+        },
+        {
+          src: grupoCertificados,
+          alt: "Grupo de certificados - Global Workers",
+        },
+      ],
     },
     {
       type: "image",
       src: alejandraRafa,
       alt: "Alejandra y Rafa - Aurora Boreal en Noruega",
-      wrapperClassName:
-        "sm:col-span-2 md:col-span-2 lg:col-span-2 sm:row-span-3 md:row-span-3 lg:row-span-3",
+      wrapperClassName: "col-span-2 md:col-span-2 lg:col-span-2",
     },
     {
       type: "image",
@@ -121,7 +119,6 @@ const Index = () => {
       type: "image",
       src: jordiJaviMartorell,
       alt: "Jordi y Javi Martorell - Vengsøy, Troms, Noruega",
-      wrapperClassName: "md:row-span-2",
     },
     {
       type: "image",
@@ -132,7 +129,6 @@ const Index = () => {
       type: "image",
       src: guilleMartin,
       alt: "Guille Martín Sáez - Enfermero trabajando en Noruega",
-      wrapperClassName: "sm:row-span-2",
     },
   ];
 
