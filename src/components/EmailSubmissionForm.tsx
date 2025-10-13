@@ -59,7 +59,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
 
   const netMonthlySalary = 3077;
-  const workingDaysPerMonth = 22;
+  const workingDaysPerMonth = 20;
   const netDailySalary = netMonthlySalary / workingDaysPerMonth;
   const daysToRecoverInvestment = selectedPlan.totalInvestment
     ? Math.ceil((selectedPlan.totalInvestment || 0) / netDailySalary)
@@ -74,7 +74,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     },
-  ) => value.toLocaleString("es-ES", options);
+  ) => value.toLocaleString("es-ES", { useGrouping: true, ...options });
 
   const financingGratuityRows: FinancingGratuityRow[] = isFinancingPlan
     ? [
@@ -224,7 +224,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Inversión directa estimada</span>
                       <span className="text-lg font-bold text-foreground">
-                        {selectedPlan.totalInvestment.toLocaleString("es-ES")}€
+                        {formatCurrency(selectedPlan.totalInvestment)}€
                       </span>
                     </div>
                   )}
@@ -256,11 +256,13 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     <div className="space-y-4 rounded-lg border-2 border-green-500/40 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-6">
                       <div className="space-y-3 text-center">
                         <p className="text-sm font-medium text-foreground">
-                          💰 Recuperación de tu inversión de {selectedPlan.totalInvestment.toLocaleString("es-ES")}€
+                          💰 Recuperación de tu inversión de {formatCurrency(selectedPlan.totalInvestment)}€
                         </p>
                         <div className="space-y-3">
                           <div className="rounded-lg bg-white/50 p-4 dark:bg-black/30">
-                            <p className="mb-1 text-xs text-muted-foreground">Trabajando en Noruega necesitas:</p>
+                            <p className="mb-1 text-xs text-muted-foreground">
+                              Trabajando en Noruega como enfermero/a necesitas:
+                            </p>
                             <p className="text-4xl font-bold text-green-600 dark:text-green-400">
                               ~{daysToRecoverInvestment ?? 0} días
                             </p>
@@ -309,16 +311,21 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                       <div className="mt-2 border-t pt-2 space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">Salario neto mensual:</span>
-                          <span className="text-sm font-semibold text-foreground">~{formatCurrency(netMonthlySalary)}€</span>
+                          <span className="text-sm font-semibold text-accent">~{formatCurrency(netMonthlySalary)}€</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          Salario neto diario aproximado: ~
-                          {formatCurrency(netDailySalary, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                          €
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            Salario neto diario aproximado:
+                          </span>
+                          <span className="text-sm font-semibold text-accent">
+                            ~
+                            {formatCurrency(netDailySalary, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                            €
+                          </span>
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           Estos cálculos están basados en la media salarial de enfermería en Noruega.
                         </p>
