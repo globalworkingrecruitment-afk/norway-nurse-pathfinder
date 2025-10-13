@@ -108,7 +108,6 @@ const Index = () => {
       type: "image",
       src: alejandraRafa,
       alt: "Alejandra y Rafa - Aurora Boreal en Noruega",
-      wrapperClassName: "col-span-2 md:col-span-2 lg:col-span-2",
     },
     {
       type: "image",
