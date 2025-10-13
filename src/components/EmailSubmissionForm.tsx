@@ -8,6 +8,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { TrendingUp, DollarSign, Calendar, ArrowRight, Sparkles, Info, ArrowLeft } from "lucide-react";
 import redGWLogo from "@/assets/redgw-logo.png";
 
+const financingGratuityScenarios = [
+  {
+    key: "between5And12",
+    label: "Trabajando como enfermera entre 5 y 12 meses en la RedGW",
+  },
+  {
+    key: "between13And24",
+    label: "Trabajando como enfermera entre 13 y 24 meses en la RedGW",
+  },
+  {
+    key: "between25And30",
+    label: "Trabajando como enfermera entre 25 y 30 meses en la RedGW",
+  },
+  {
+    key: "moreThan30",
+    label: "Trabajando como enfermera más de 30 meses en la RedGW",
+  },
+] as const;
+
+type FinancingScenarioKey =
+  (typeof financingGratuityScenarios)[number]["key"];
+
+interface FinancingGratuityRow {
+  label: string;
+  values: Record<FinancingScenarioKey, string>;
+}
+
 interface EmailSubmissionFormProps {
   selectedPlan: {
     id: string;
@@ -31,16 +58,26 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
 
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
 
-  const financingGratuityRows = isFinancingPlan
+  const financingGratuityRows: FinancingGratuityRow[] = isFinancingPlan
     ? [
         {
           label: "Descuento del que te beneficias por trabajar en la RedGW",
-          values: ["0€", "2.300€", "3.000€", "5.300€"],
+          values: {
+            between5And12: "0€",
+            between13And24: "2.300€",
+            between25And30: "3.000€",
+            moreThan30: "5.300€",
+          },
         },
         {
           label:
             "% de descuento que recibes por trabajar en la RedGW como enfermera",
-          values: ["0%", "28,30%", "56,60%", "100%"],
+          values: {
+            between5And12: "0%",
+            between13And24: "28,30%",
+            between25And30: "56,60%",
+            moreThan30: "100%",
+          },
         },
       ]
     : [];
@@ -364,7 +401,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-xl font-semibold text-foreground">
-                Programa de Formación y Desarrollo del Talento Global Working
+                Gratuidad de los servicios de Global Working
               </h3>
               <p className="text-sm text-muted-foreground">
                 Descubre cómo evoluciona el coste del programa en función de tu
@@ -389,11 +426,11 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                   </th>
                   {financingGratuityScenarios.map((scenario) => (
                     <th
-                      key={scenario}
+                      key={scenario.key}
                       scope="col"
                       className="px-4 py-3 font-semibold text-muted-foreground"
                     >
-                      {scenario}
+                      {scenario.label}
                     </th>
                   ))}
                 </tr>
@@ -407,70 +444,12 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     >
                       {row.label}
                     </th>
-                    {row.values.map((value, index) => (
-                      <td key={`${row.label}-${index}`} className="px-4 py-4 text-sm text-muted-foreground">
-                        {value}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {isFinancingPlan && (
-        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Gratuidad de los servicios de Global Working
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Descubre cómo evoluciona el coste del programa en función de tu
-                permanencia en la Red Global Working.
-              </p>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
-              <span>Precio del programa</span>
-              <span className="text-lg">5.300€</span>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] border-collapse text-sm">
-              <thead>
-                <tr className="bg-muted text-left">
-                  <th className="px-4 py-3 font-semibold text-muted-foreground">
-                    Escenario
-                  </th>
-                  <th className="px-4 py-3 font-semibold text-muted-foreground">
-                    Trabajando como enfermera entre 5 y 12 meses en la RedGW
-                  </th>
-                  <th className="px-4 py-3 font-semibold text-muted-foreground">
-                    Trabajando como enfermera entre 13 y 24 meses en la RedGW
-                  </th>
-                  <th className="px-4 py-3 font-semibold text-muted-foreground">
-                    Trabajando como enfermera entre 25 y 30 meses en la RedGW
-                  </th>
-                  <th className="px-4 py-3 font-semibold text-muted-foreground">
-                    Trabajando como enfermera más de 30 meses en la RedGW
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {financingGratuityRows.map((row) => (
-                  <tr key={row.label} className="border-t border-border">
-                    <th
-                      scope="row"
-                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
-                    >
-                      {row.label}
-                    </th>
-                    {row.values.map((value, index) => (
-                      <td key={`${row.label}-${index}`} className="px-4 py-4 text-sm text-muted-foreground">
-                        {value}
+                    {financingGratuityScenarios.map((scenario) => (
+                      <td
+                        key={`${row.label}-${scenario.key}`}
+                        className="px-4 py-4 text-sm text-muted-foreground"
+                      >
+                        {row.values[scenario.key]}
                       </td>
                     ))}
                   </tr>
