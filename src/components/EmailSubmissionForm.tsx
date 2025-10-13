@@ -34,10 +34,6 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const financingGratuityRows = isFinancingPlan
     ? [
         {
-          label: "Hay que pagar en caso de abandono",
-          values: ["5.300€", "3.000€", "2.300€", "0€"],
-        },
-        {
           label: "Descuento del que te beneficias por trabajar en la RedGW",
           values: ["0€", "2.300€", "3.000€", "5.300€"],
         },
@@ -456,6 +452,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     Trabajando como enfermera entre 13 y 24 meses en la RedGW
                   </th>
                   <th className="px-4 py-3 font-semibold text-muted-foreground">
+                    Trabajando como enfermera entre 25 y 30 meses en la RedGW
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-muted-foreground">
                     Trabajando como enfermera más de 30 meses en la RedGW
                   </th>
                 </tr>
@@ -481,6 +480,68 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           </div>
         </div>
       )}
+
+      <div className="mt-10 rounded-xl border bg-muted/40 p-6">
+        <h3 className="text-lg font-semibold mb-4">Tus Datos de Contacto</h3>
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Nombre completo *
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Tu nombre completo"
+                required
+                className="transition-all duration-200 focus:scale-[1.01]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email *
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                required
+                className="transition-all duration-200 focus:scale-[1.01]"
+              />
+            </div>
+
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6">
+              <p className="text-xs text-muted-foreground">
+                Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo
+                para ofrecerte información sobre el programa seleccionado.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onBack}
+                className="flex-1 transition-all duration-200 hover:scale-[1.02]"
+              >
+                Volver
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
+              >
+                {loading ? "Enviando..." : "Enviar solicitud"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
