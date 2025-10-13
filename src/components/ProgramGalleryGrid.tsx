@@ -22,15 +22,15 @@ interface ProgramGalleryGridProps {
 }
 
 const baseWrapperClasses =
-  "aspect-square overflow-hidden rounded-lg shadow-lg transition-shadow hover:shadow-xl";
+  "group relative break-inside-avoid overflow-hidden rounded-lg shadow-lg transition-shadow hover:shadow-xl";
 const baseImageClasses =
-  "h-full w-full object-cover transition-transform duration-300 hover:scale-105";
+  "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105";
 
 export const ProgramGalleryGrid = ({ items, className }: ProgramGalleryGridProps) => {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4",
+        "columns-2 gap-4 sm:columns-3 lg:columns-4",
         className,
       )}
     >
@@ -40,14 +40,14 @@ export const ProgramGalleryGrid = ({ items, className }: ProgramGalleryGridProps
             <div
               key={`stack-${index}`}
               className={cn(
-                "flex flex-col gap-4",
-                item.wrapperClassName ?? "col-span-2 md:col-span-1 lg:col-span-2",
+                "mb-4 flex flex-col break-inside-avoid",
+                item.wrapperClassName,
               )}
             >
               {item.items.map((stackedImage, stackedIndex) => (
                 <div
                   key={stackedImage.src + stackedIndex.toString()}
-                  className={cn(baseWrapperClasses)}
+                  className={cn("mb-4 last:mb-0", baseWrapperClasses)}
                 >
                   <img
                     src={stackedImage.src}
@@ -63,7 +63,7 @@ export const ProgramGalleryGrid = ({ items, className }: ProgramGalleryGridProps
         return (
           <div
             key={item.src + index.toString()}
-            className={cn(baseWrapperClasses, item.wrapperClassName)}
+            className={cn("mb-4", baseWrapperClasses, item.wrapperClassName)}
           >
             <img src={item.src} alt={item.alt} className={baseImageClasses} />
           </div>
