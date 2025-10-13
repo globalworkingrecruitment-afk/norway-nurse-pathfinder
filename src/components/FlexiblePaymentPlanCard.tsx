@@ -14,6 +14,7 @@ export interface SharedInvestmentOption {
   amortization: number;
   monthlyPayment: number;
   description: string;
+  totalInvestment?: number;
 }
 
 export type AuroraHighlightVariant = "softBlue" | "softOrange" | "accentGlow" | "spotlight";
@@ -33,6 +34,7 @@ const subPlans: SharedInvestmentOption[] = [
     amortization: 16,
     monthlyPayment: 125,
     description: "Equilibrio entre cuota reducida y rápida amortización en la RedGW.",
+    totalInvestment: 3750,
   },
   {
     key: "fiordo",

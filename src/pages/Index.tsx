@@ -150,6 +150,7 @@ const Index = () => {
       monthlyPayment: `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`,
       amortization: `${plan.amortization} meses en la RedGW`,
       notes: plan.description,
+      totalInvestment: plan.totalInvestment,
     });
   };
 
