@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { TrendingUp, DollarSign, Calendar, ArrowRight, Sparkles, Info, ArrowLeft } from "lucide-react";
 import redGWLogo from "@/assets/redgw-logo.png";
 import amandaPhoto from "@/assets/amanda-casado.jpg";
+import { cn } from "@/lib/utils";
 
 const financingGratuityScenarios = [
   {
@@ -77,7 +78,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         ? "Déjanos tus datos y Amanda Casado te acompañará personalmente para que aproveches al máximo esta modalidad intensiva, resolviendo todas tus dudas en el proceso."
         : undefined;
 
-  const shouldShowAmandaContact = isAuroraPlan || isFiordoPlan || isVikingPlan;
+  const shouldShowAmandaContact =
+    isAuroraPlan || isFiordoPlan || isVikingPlan || isFinancingPlan;
+  const shouldUsePremiumFormStyle = isFinancingPlan || isFiordoPlan;
 
   const netMonthlySalary = 3077;
   const workingDaysPerMonth = 20;
@@ -662,10 +665,6 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                 permanencia en la Red Global Working.
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
-              <span>Precio del programa</span>
-              <span className="text-lg">5.300€</span>
-            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -937,8 +936,19 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         </div>
       )}
 
-      <div className="mt-10 rounded-xl border bg-muted/40 p-6">
-        <div className="mx-auto max-w-2xl text-center space-y-2">
+      <div
+        className={cn(
+          "mt-10 rounded-xl border bg-muted/40 p-6",
+          shouldUsePremiumFormStyle &&
+            "overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-white to-accent/10 p-8 shadow-[0_25px_70px_-35px_rgba(59,130,246,0.4)]",
+        )}
+      >
+        <div
+          className={cn(
+            "mx-auto max-w-2xl text-center space-y-2",
+            shouldUsePremiumFormStyle && "max-w-3xl",
+          )}
+        >
           <h3 className="text-xl font-semibold text-foreground">{contactSectionTitle}</h3>
           {contactSectionDescription && (
             <p className="text-sm text-muted-foreground">
@@ -946,9 +956,25 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             </p>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mt-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
+        <form
+          onSubmit={handleSubmit}
+          className={cn(
+            "max-w-2xl mx-auto mt-6",
+            shouldUsePremiumFormStyle && "max-w-3xl mt-8",
+          )}
+        >
+          <div
+            className={cn(
+              "space-y-4",
+              shouldUsePremiumFormStyle && "grid gap-6 sm:grid-cols-2",
+            )}
+          >
+            <div
+              className={cn(
+                "space-y-2",
+                shouldUsePremiumFormStyle && "sm:col-span-1",
+              )}
+            >
               <Label htmlFor="name" className="text-sm font-medium">
                 Nombre completo *
               </Label>
@@ -963,7 +989,12 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
               />
             </div>
 
-            <div className="space-y-2">
+            <div
+              className={cn(
+                "space-y-2",
+                shouldUsePremiumFormStyle && "sm:col-span-1",
+              )}
+            >
               <Label htmlFor="email" className="text-sm font-medium">
                 Email *
               </Label>
@@ -978,26 +1009,42 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
               />
             </div>
 
-            <div className="bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6">
+            <div
+              className={cn(
+                "bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6",
+                shouldUsePremiumFormStyle && "sm:col-span-2 mt-0",
+              )}
+            >
               <p className="text-xs text-muted-foreground">
                 Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo
                 para ofrecerte información sobre el programa seleccionado.
               </p>
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div
+              className={cn(
+                "flex gap-3 pt-4",
+                shouldUsePremiumFormStyle && "sm:col-span-2 flex-col sm:flex-row",
+              )}
+            >
               <Button
                 type="button"
                 variant="outline"
                 onClick={onBack}
-                className="flex-1 transition-all duration-200 hover:scale-[1.02]"
+                className={cn(
+                  "flex-1 transition-all duration-200 hover:scale-[1.02]",
+                  shouldUsePremiumFormStyle && "w-full sm:w-auto",
+                )}
               >
                 Volver
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
+                className={cn(
+                  "flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg",
+                  shouldUsePremiumFormStyle && "w-full sm:w-auto",
+                )}
               >
                 {loading ? "Enviando..." : "Enviar solicitud"}
               </Button>
