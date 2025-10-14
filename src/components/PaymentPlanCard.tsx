@@ -31,6 +31,19 @@ export const PaymentPlanCard = ({
   onSelect = () => {},
   disableActions = false,
 }: PaymentPlanCardProps) => {
+  const shouldShowMonthlyPaymentDetail =
+    typeof monthlyPayment === "string" && monthlyPayment.includes("durante");
+
+  let monthlyPaymentMain = monthlyPayment;
+  let monthlyPaymentDetail: string | null = null;
+
+  if (shouldShowMonthlyPaymentDetail && typeof monthlyPayment === "string") {
+    const [mainPart, ...rest] = monthlyPayment.split("durante");
+    monthlyPaymentMain = mainPart.trim();
+    const detail = rest.join("durante").trim();
+    monthlyPaymentDetail = detail ? `durante ${detail}` : null;
+  }
+
   return (
     <Card
       className={`relative flex h-full flex-col transition-all hover:shadow-lg ${
@@ -57,7 +70,16 @@ export const PaymentPlanCard = ({
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Pago mensual
                     </p>
-                    <p className="text-base font-semibold text-foreground">{monthlyPayment}</p>
+                    {monthlyPaymentDetail ? (
+                      <div className="flex flex-col text-base font-semibold text-foreground sm:flex-row sm:items-baseline sm:gap-2">
+                        <span>{monthlyPaymentMain}</span>
+                        <span className="text-sm font-medium text-muted-foreground sm:ml-1">
+                          {monthlyPaymentDetail}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-base font-semibold text-foreground">{monthlyPayment}</p>
+                    )}
                   </div>
                 </div>
               )}

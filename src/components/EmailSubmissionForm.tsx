@@ -215,6 +215,37 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
     ? fiordoMonthlyPaymentMessage
     : selectedPlan.monthlyPayment;
 
+  const renderMonthlyPayment = () => {
+    if (isFiordoPlan) {
+      return (
+        <span className="inline-flex items-baseline gap-1 whitespace-nowrap text-sky-500">
+          <span className="text-lg font-semibold leading-none">375€/mes</span>
+          <span className="text-sm font-medium leading-none">
+            en los 4 primeros meses del Programa
+          </span>
+        </span>
+      );
+    }
+
+    if (isAuroraPlan && selectedPlan.monthlyPayment.includes("durante")) {
+      const [mainPart, ...rest] = selectedPlan.monthlyPayment.split("durante");
+      const detail = rest.join("durante").trim();
+
+      return (
+        <span className="inline-flex flex-col items-end gap-0 whitespace-nowrap text-accent sm:flex-row sm:items-baseline sm:gap-2">
+          <span className="text-lg font-semibold leading-none">{mainPart.trim()}</span>
+          {detail && (
+            <span className="text-sm font-medium leading-none text-muted-foreground">
+              {`durante ${detail}`}
+            </span>
+          )}
+        </span>
+      );
+    }
+
+    return <span className="text-lg font-semibold text-accent">{selectedPlan.monthlyPayment}</span>;
+  };
+
   const parseCurrency = (value: string) => {
     const match = value.match(/[\d.,]+/);
     if (!match) return 0;
@@ -327,18 +358,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                 <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm text-muted-foreground">Pago mensual</span>
-                    {isFiordoPlan ? (
-                      <span className="inline-flex items-baseline gap-1 whitespace-nowrap text-sky-500">
-                        <span className="text-lg font-semibold leading-none">375€/mes</span>
-                        <span className="text-sm font-medium leading-none">
-                          en los 4 primeros meses del Programa
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="text-lg font-semibold text-accent">
-                        {selectedPlan.monthlyPayment}
-                      </span>
-                    )}
+                    {renderMonthlyPayment()}
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
