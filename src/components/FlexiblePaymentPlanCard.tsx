@@ -42,6 +42,7 @@ const subPlans: SharedInvestmentOption[] = [
     amortization: 22,
     monthlyPayment: 375,
     description: "Mayor tiempo de amortización con una cuota mensual intermedia.",
+    totalInvestment: 1500,
   },
   {
     key: "vikinga",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,6 +57,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const { toast } = useToast();
 
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
+  const isFiordoPlan = selectedPlan.id === "inversion-compartida-fiordo";
 
   const netMonthlySalary = 3077;
   const workingDaysPerMonth = 20;
@@ -99,6 +100,63 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         },
       ]
     : [];
+
+  const fiordoScenarios = [
+    {
+      key: "between5And12",
+      label: "Trabajando como enfermera entre 5 y 12 meses en la RedGW",
+    },
+    {
+      key: "between13And20",
+      label: "Trabajando como enfermera entre 13 y 20 meses en la RedGW",
+    },
+    {
+      key: "between21And22",
+      label: "Trabajando como enfermera entre 21 y 22 meses en la RedGW",
+    },
+    {
+      key: "moreThan22",
+      label: "Trabajando como enfermera más de 22 meses en la RedGW",
+    },
+  ] as const;
+
+  type FiordoScenarioKey = (typeof fiordoScenarios)[number]["key"];
+
+  interface FiordoRow {
+    label: string;
+    values: Record<FiordoScenarioKey, string>;
+  }
+
+  const fiordoRows: FiordoRow[] = isFiordoPlan
+    ? [
+        {
+          label: "Descuento del que te beneficias por trabajar en la RedGW",
+          values: {
+            between5And12: "0€",
+            between13And20: "1.500€",
+            between21And22: "3.000€",
+            moreThan22: "No es necesario abonan ningún importe",
+          },
+        },
+        {
+          label:
+            "% de descuento que recibes por trabajar en la RedGW como enfermera",
+          values: {
+            between5And12: "0,0%",
+            between13And20: "39,47%",
+            between21And22: "78,95%",
+            moreThan22: "",
+          },
+        },
+      ]
+    : [];
+
+  const fiordoMonthlyPaymentMessage =
+    "375€/mes en los 4 primeros meses del Programa";
+
+  const monthlyPaymentText = isFiordoPlan
+    ? fiordoMonthlyPaymentMessage
+    : selectedPlan.monthlyPayment;
 
   const parseCurrency = (value: string) => {
     const match = value.match(/[\d.,]+/);
@@ -210,9 +268,20 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                   Detalles del Plan
                 </h3>
                 <div className="space-y-3 rounded-lg border bg-muted/50 p-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <span className="text-sm text-muted-foreground">Pago mensual</span>
-                    <span className="text-lg font-semibold text-accent">{selectedPlan.monthlyPayment}</span>
+                    {isFiordoPlan ? (
+                      <span className="inline-flex items-baseline gap-1 whitespace-nowrap text-sky-500">
+                        <span className="text-lg font-semibold leading-none">375€/mes</span>
+                        <span className="text-sm font-medium leading-none">
+                          en los 4 primeros meses del Programa
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-lg font-semibold text-accent">
+                        {selectedPlan.monthlyPayment}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -291,7 +360,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                       </p>
                       <ul className="space-y-2 text-sm text-muted-foreground">
                         <li>📅 {selectedPlan.amortization}</li>
-                        <li>💶 {selectedPlan.monthlyPayment}</li>
+                        <li>💶 {monthlyPaymentText}</li>
                         {selectedPlan.notes && <li>📝 {selectedPlan.notes}</li>}
                       </ul>
                     </div>
@@ -493,6 +562,81 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                         {row.values[scenario.key]}
                       </td>
                     ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {isFiordoPlan && (
+        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-foreground">
+                Programa de Formación y Desarrollo del Talento Global Working - Modalidad Fiordo
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Descubre cómo evoluciona tu inversión en función del tiempo que trabajes en la
+                Red Global Working.
+              </p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-muted text-left">
+                  <th scope="col" className="sr-only px-4 py-3 font-semibold text-muted-foreground">
+                    Concepto
+                  </th>
+                  {fiordoScenarios.map((scenario) => (
+                    <th
+                      key={scenario.key}
+                      scope="col"
+                      className="px-4 py-3 font-semibold text-muted-foreground"
+                    >
+                      {scenario.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {fiordoRows.map((row, rowIndex) => (
+                  <tr key={row.label} className="border-t border-border">
+                    <th
+                      scope="row"
+                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
+                    >
+                      {row.label}
+                    </th>
+                    {fiordoScenarios.map((scenario) => {
+                      if (scenario.key === "moreThan22") {
+                        if (rowIndex === 0) {
+                          return (
+                            <td
+                              key={`${row.label}-${scenario.key}`}
+                              rowSpan={fiordoRows.length}
+                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
+                            >
+                              {row.values[scenario.key]}
+                            </td>
+                          );
+                        }
+
+                        return <Fragment key={`${row.label}-${scenario.key}`} />;
+                      }
+
+                      return (
+                        <td
+                          key={`${row.label}-${scenario.key}`}
+                          className="px-4 py-4 text-sm text-muted-foreground"
+                        >
+                          {row.values[scenario.key]}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
