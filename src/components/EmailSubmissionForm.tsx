@@ -72,13 +72,6 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
       : undefined;
 
-  const contactSectionTitle = isFiordoPlan
-    ? "Da el paso a la Modalidad Fiordo"
-    : "Tus Datos de Contacto";
-  const contactSectionDescription = isFiordoPlan
-    ? "Déjanos tus datos y te acompañaremos personalmente para confirmar esta opción y resolver cualquier duda que tengas."
-    : undefined;
-
   const netMonthlySalary = 3077;
   const workingDaysPerMonth = 20;
   const netDailySalary = netMonthlySalary / workingDaysPerMonth;
@@ -208,7 +201,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             "% de descuento que recibes por trabajar en la RedGW como enfermera",
           values: {
             between5And12: "0%",
-            between13And18: "41,33%",
+            between13And18: "29%",
             from19Onwards: "",
           },
         },
@@ -851,6 +844,40 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           </div>
         </form>
       </div>
+
+      {isAuroraPlan && (
+        <div className="mt-10 overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 p-6 md:p-8">
+          <div className="grid gap-6 md:grid-cols-[auto,1fr] md:items-center">
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl" aria-hidden />
+                <img
+                  src={amandaPhoto}
+                  alt="Amanda Casado"
+                  className="relative h-40 w-40 rounded-full border-4 border-white object-cover shadow-xl"
+                />
+              </div>
+            </div>
+            <div className="space-y-2 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-foreground">¿Tienes dudas sobre los planes?</h3>
+              <p className="text-primary font-semibold">Amanda Casado</p>
+              <p className="text-sm text-muted-foreground">Especialista en Selección y Desarrollo del Talento</p>
+              <p className="text-muted-foreground">
+                Agenda una llamada conmigo para resolver todas tus dudas sobre los planes de inversión y descubrir cuál se
+                adapta mejor a tus necesidades.
+              </p>
+              <Button
+                size="lg"
+                className="mx-auto mt-2 flex items-center gap-2 md:mx-0"
+                onClick={() => window.open("https://calendly.com/amanda-globalworking", "_blank")}
+              >
+                <Calendar className="h-5 w-5" />
+                Agendar llamada con Amanda
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isFiordoPlan && (
         <div className="mt-10 overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 p-6 md:p-8">
