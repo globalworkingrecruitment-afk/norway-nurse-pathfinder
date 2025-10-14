@@ -60,17 +60,24 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
   const isFiordoPlan = selectedPlan.id === "inversion-compartida-fiordo";
   const isAuroraPlan = selectedPlan.id === "inversion-compartida-aurora";
+  const isVikingPlan = selectedPlan.id === "inversion-compartida-vikinga";
 
   const contactSectionTitle = isFiordoPlan
     ? "Da el paso a la Modalidad Fiordo"
     : isAuroraPlan
       ? "Activa tu camino con la Modalidad Aurora"
-      : "Tus Datos de Contacto";
+      : isVikingPlan
+        ? "Impulsa tu candidatura con la Modalidad Vikinga"
+        : "Tus Datos de Contacto";
   const contactSectionDescription = isFiordoPlan
     ? "Déjanos tus datos y te acompañaremos personalmente para confirmar esta opción y resolver cualquier duda que tengas."
     : isAuroraPlan
       ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
-      : undefined;
+      : isVikingPlan
+        ? "Déjanos tus datos y Amanda Casado te acompañará personalmente para que aproveches al máximo esta modalidad intensiva, resolviendo todas tus dudas en el proceso."
+        : undefined;
+
+  const shouldShowAmandaContact = isAuroraPlan || isFiordoPlan || isVikingPlan;
 
   const netMonthlySalary = 3077;
   const workingDaysPerMonth = 20;
@@ -164,6 +171,50 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       ]
     : [];
 
+  const vikingScenarios = [
+    {
+      key: "between5And12",
+      label: "Trabajando como enfermera entre 5 y 12 meses en la RedGW",
+    },
+    {
+      key: "between13And18",
+      label: "Trabajando como enfermera entre 13 y 18 meses en la RedGW",
+    },
+    {
+      key: "moreThan18",
+      label: "Trabajando como enfermera más de 18 meses en la RedGW",
+    },
+  ] as const;
+
+  type VikingScenarioKey = (typeof vikingScenarios)[number]["key"];
+
+  interface VikingRow {
+    label: string;
+    values: Record<VikingScenarioKey, string>;
+  }
+
+  const vikingRows: VikingRow[] = isVikingPlan
+    ? [
+        {
+          label: "Descuento del que te beneficias por trabajar en la RedGW",
+          values: {
+            between5And12: "0€",
+            between13And18: "1.300€",
+            moreThan18: "No es necesario abonar ningún importe",
+          },
+        },
+        {
+          label:
+            "% de descuento que recibes por trabajar en la RedGW como enfermera",
+          values: {
+            between5And12: "0,0%",
+            between13And18: "24,53%",
+            moreThan18: "",
+          },
+        },
+      ]
+    : [];
+
   const auroraScenarios = [
     {
       key: "between5And12",
@@ -211,39 +262,55 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const fiordoMonthlyPaymentMessage =
     "375€/mes en los 4 primeros meses del Programa";
 
-  const monthlyPaymentText = isFiordoPlan
-    ? fiordoMonthlyPaymentMessage
-    : selectedPlan.monthlyPayment;
+  const monthlyPaymentText =
+    isFiordoPlan && !selectedPlan.monthlyPayment.includes("€/mes")
+      ? fiordoMonthlyPaymentMessage
+      : selectedPlan.monthlyPayment;
+
+  const getMonthlyPaymentParts = (value: string) => {
+    const slashMesMatch = value.match(/^(?<main>[^a-zA-Z]*€\/mes)(?<detail>.*)$/u);
+
+    if (slashMesMatch?.groups) {
+      const detail = slashMesMatch.groups.detail.trim();
+      return {
+        main: slashMesMatch.groups.main.trim(),
+        detail: detail.length > 0 ? detail : null,
+      };
+    }
+
+    if (value.includes("durante")) {
+      const [mainPart, ...rest] = value.split("durante");
+      const detail = rest.join("durante").trim();
+
+      return {
+        main: mainPart.trim(),
+        detail: detail ? `durante ${detail}` : null,
+      };
+    }
+
+    return { main: value, detail: null };
+  };
+
+  const { main: monthlyPaymentMain, detail: monthlyPaymentDetail } =
+    getMonthlyPaymentParts(monthlyPaymentText);
 
   const renderMonthlyPayment = () => {
-    if (isFiordoPlan) {
+    if (monthlyPaymentDetail) {
       return (
         <span className="inline-flex flex-col items-end gap-0 whitespace-nowrap text-accent sm:flex-row sm:items-baseline sm:gap-2">
-          <span className="text-lg font-semibold leading-none">375€/mes</span>
+          <span className="text-lg font-semibold leading-none">{monthlyPaymentMain}</span>
           <span className="text-sm font-medium leading-none text-muted-foreground">
-            en los 4 primeros meses del Programa
+            {monthlyPaymentDetail}
           </span>
         </span>
       );
     }
 
-    if (isAuroraPlan && selectedPlan.monthlyPayment.includes("durante")) {
-      const [mainPart, ...rest] = selectedPlan.monthlyPayment.split("durante");
-      const detail = rest.join("durante").trim();
-
-      return (
-        <span className="inline-flex flex-col items-end gap-0 whitespace-nowrap text-accent sm:flex-row sm:items-baseline sm:gap-2">
-          <span className="text-lg font-semibold leading-none">{mainPart.trim()}</span>
-          {detail && (
-            <span className="text-sm font-medium leading-none text-muted-foreground">
-              {`durante ${detail}`}
-            </span>
-          )}
-        </span>
-      );
-    }
-
-    return <span className="text-lg font-semibold text-accent">{selectedPlan.monthlyPayment}</span>;
+    return (
+      <span className="text-lg font-semibold text-accent">
+        {monthlyPaymentMain}
+      </span>
+    );
   };
 
   const parseCurrency = (value: string) => {
@@ -722,6 +789,80 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         </div>
       )}
 
+      {isVikingPlan && (
+        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
+            <div className="flex flex-col gap-3">
+              <div>
+                <h3 className="text-xl font-semibold text-foreground">
+                  Programa de Formación y Desarrollo del Talento Global Working - Modalidad Vikinga
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Descubre cómo evoluciona tu inversión en función del tiempo que trabajes en la Red Global Working.
+                </p>
+              </div>
+            </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-muted text-left">
+                  <th scope="col" className="sr-only px-4 py-3 font-semibold text-muted-foreground">
+                    Concepto
+                  </th>
+                  {vikingScenarios.map((scenario) => (
+                    <th
+                      key={scenario.key}
+                      scope="col"
+                      className="px-4 py-3 font-semibold text-muted-foreground"
+                    >
+                      {scenario.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {vikingRows.map((row, rowIndex) => (
+                  <tr key={row.label} className="border-t border-border">
+                    <th
+                      scope="row"
+                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
+                    >
+                      {row.label}
+                    </th>
+                    {vikingScenarios.map((scenario) => {
+                      if (scenario.key === "moreThan18") {
+                        if (rowIndex === 0) {
+                          return (
+                            <td
+                              key={`${row.label}-${scenario.key}`}
+                              rowSpan={vikingRows.length}
+                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
+                            >
+                              {row.values[scenario.key]}
+                            </td>
+                          );
+                        }
+
+                        return <Fragment key={`${row.label}-${scenario.key}`} />;
+                      }
+
+                      return (
+                        <td
+                          key={`${row.label}-${scenario.key}`}
+                          className="px-4 py-4 text-sm text-muted-foreground"
+                        >
+                          {row.values[scenario.key]}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {isAuroraPlan && (
         <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -865,41 +1006,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         </form>
       </div>
 
-      {isAuroraPlan && (
-        <div className="mt-10 overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 p-6 md:p-8">
-          <div className="grid gap-6 md:grid-cols-[auto,1fr] md:items-center">
-            <div className="flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl" aria-hidden />
-                <img
-                  src={amandaPhoto}
-                  alt="Amanda Casado"
-                  className="relative h-40 w-40 rounded-full border-4 border-white object-cover shadow-xl"
-                />
-              </div>
-            </div>
-            <div className="space-y-2 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-foreground">¿Tienes dudas sobre los planes?</h3>
-              <p className="text-primary font-semibold">Amanda Casado</p>
-              <p className="text-sm text-muted-foreground">Especialista en Selección y Desarrollo del Talento</p>
-              <p className="text-muted-foreground">
-                Agenda una llamada conmigo para resolver todas tus dudas sobre los planes de inversión y descubrir cuál se
-                adapta mejor a tus necesidades.
-              </p>
-              <Button
-                size="lg"
-                className="mx-auto mt-2 flex items-center gap-2 md:mx-0"
-                onClick={() => window.open("https://calendly.com/amanda-globalworking", "_blank")}
-              >
-                <Calendar className="h-5 w-5" />
-                Agendar llamada con Amanda
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isFiordoPlan && (
+      {shouldShowAmandaContact && (
         <div className="mt-10 overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 p-6 md:p-8">
           <div className="grid gap-6 md:grid-cols-[auto,1fr] md:items-center">
             <div className="flex justify-center">

@@ -31,17 +31,22 @@ export const PaymentPlanCard = ({
   onSelect = () => {},
   disableActions = false,
 }: PaymentPlanCardProps) => {
-  const shouldShowMonthlyPaymentDetail =
-    typeof monthlyPayment === "string" && monthlyPayment.includes("durante");
-
   let monthlyPaymentMain = monthlyPayment;
   let monthlyPaymentDetail: string | null = null;
 
-  if (shouldShowMonthlyPaymentDetail && typeof monthlyPayment === "string") {
-    const [mainPart, ...rest] = monthlyPayment.split("durante");
-    monthlyPaymentMain = mainPart.trim();
-    const detail = rest.join("durante").trim();
-    monthlyPaymentDetail = detail ? `durante ${detail}` : null;
+  if (typeof monthlyPayment === "string") {
+    const detailMatch = monthlyPayment.match(/^(?<main>[^a-zA-Z]*€\/mes)(?<detail>.*)$/u);
+
+    if (detailMatch?.groups) {
+      monthlyPaymentMain = detailMatch.groups.main.trim();
+      const detail = detailMatch.groups.detail.trim();
+      monthlyPaymentDetail = detail.length > 0 ? detail : null;
+    } else if (monthlyPayment.includes("durante")) {
+      const [mainPart, ...rest] = monthlyPayment.split("durante");
+      monthlyPaymentMain = mainPart.trim();
+      const detail = rest.join("durante").trim();
+      monthlyPaymentDetail = detail ? `durante ${detail}` : null;
+    }
   }
 
   return (
