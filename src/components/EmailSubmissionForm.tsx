@@ -59,6 +59,18 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
 
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
   const isFiordoPlan = selectedPlan.id === "inversion-compartida-fiordo";
+  const isAuroraPlan = selectedPlan.id === "inversion-compartida-aurora";
+
+  const contactSectionTitle = isFiordoPlan
+    ? "Da el paso a la Modalidad Fiordo"
+    : isAuroraPlan
+      ? "Activa tu camino con la Modalidad Aurora"
+      : "Tus Datos de Contacto";
+  const contactSectionDescription = isFiordoPlan
+    ? "Déjanos tus datos y te acompañaremos personalmente para confirmar esta opción y resolver cualquier duda que tengas."
+    : isAuroraPlan
+      ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
+      : undefined;
 
   const contactSectionTitle = isFiordoPlan
     ? "Da el paso a la Modalidad Fiordo"
@@ -154,6 +166,50 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             between13And20: "39,47%",
             between21And22: "78,95%",
             moreThan22: "",
+          },
+        },
+      ]
+    : [];
+
+  const auroraScenarios = [
+    {
+      key: "between5And12",
+      label: "Trabajando como enfermera entre 5 y 12 meses en la RedGW",
+    },
+    {
+      key: "between13And18",
+      label: "Trabajando como enfermera entre 13 y 18 meses en la RedGW",
+    },
+    {
+      key: "from19Onwards",
+      label: "Trabajando como enfermera a partir del mes 19 en la RedGW",
+    },
+  ] as const;
+
+  type AuroraScenarioKey = (typeof auroraScenarios)[number]["key"];
+
+  interface AuroraRow {
+    label: string;
+    values: Record<AuroraScenarioKey, string>;
+  }
+
+  const auroraRows: AuroraRow[] = isAuroraPlan
+    ? [
+        {
+          label: "Descuento del que te beneficias por trabajar en la RedGW",
+          values: {
+            between5And12: "0€",
+            between13And18: "1.550€",
+            from19Onwards: "No es necesario abonar ningún importe",
+          },
+        },
+        {
+          label:
+            "% de descuento que recibes por trabajar en la RedGW como enfermera",
+          values: {
+            between5And12: "0%",
+            between13And18: "41,33%",
+            from19Onwards: "",
           },
         },
       ]
@@ -626,6 +682,80 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                             <td
                               key={`${row.label}-${scenario.key}`}
                               rowSpan={fiordoRows.length}
+                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
+                            >
+                              {row.values[scenario.key]}
+                            </td>
+                          );
+                        }
+
+                        return <Fragment key={`${row.label}-${scenario.key}`} />;
+                      }
+
+                      return (
+                        <td
+                          key={`${row.label}-${scenario.key}`}
+                          className="px-4 py-4 text-sm text-muted-foreground"
+                        >
+                          {row.values[scenario.key]}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {isAuroraPlan && (
+        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-foreground">
+                Programa de Formación y Desarrollo del Talento Global Working - Modalidad Aurora
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Descubre cómo evoluciona tu inversión en función del tiempo que trabajes en la Red Global Working.
+              </p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
+              <thead>
+                <tr className="bg-muted text-left">
+                  <th scope="col" className="sr-only px-4 py-3 font-semibold text-muted-foreground">
+                    Concepto
+                  </th>
+                  {auroraScenarios.map((scenario) => (
+                    <th
+                      key={scenario.key}
+                      scope="col"
+                      className="px-4 py-3 font-semibold text-muted-foreground"
+                    >
+                      {scenario.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {auroraRows.map((row, rowIndex) => (
+                  <tr key={row.label} className="border-t border-border">
+                    <th
+                      scope="row"
+                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
+                    >
+                      {row.label}
+                    </th>
+                    {auroraScenarios.map((scenario) => {
+                      if (scenario.key === "from19Onwards") {
+                        if (rowIndex === 0) {
+                          return (
+                            <td
+                              key={`${row.label}-${scenario.key}`}
+                              rowSpan={auroraRows.length}
                               className="px-4 py-4 text-center text-sm font-semibold text-foreground"
                             >
                               {row.values[scenario.key]}
