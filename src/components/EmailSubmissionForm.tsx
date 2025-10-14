@@ -218,9 +218,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const renderMonthlyPayment = () => {
     if (isFiordoPlan) {
       return (
-        <span className="inline-flex items-baseline gap-1 whitespace-nowrap text-sky-500">
+        <span className="inline-flex flex-col items-end gap-0 whitespace-nowrap text-accent sm:flex-row sm:items-baseline sm:gap-2">
           <span className="text-lg font-semibold leading-none">375€/mes</span>
-          <span className="text-sm font-medium leading-none">
+          <span className="text-sm font-medium leading-none text-muted-foreground">
             en los 4 primeros meses del Programa
           </span>
         </span>
