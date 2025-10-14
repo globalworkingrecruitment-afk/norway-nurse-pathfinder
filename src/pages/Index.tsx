@@ -143,11 +143,16 @@ const Index = () => {
   };
 
   const handleInversionCompartida = (plan: SharedInvestmentOption) => {
+    const monthlyPaymentText =
+      plan.key === "aurora"
+        ? "125€/mes durante 30 meses"
+        : `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`;
+
     setSelectedPlan({
       id: `inversion-compartida-${plan.key}`,
       title: "Inversión Compartida",
       variantName: plan.name,
-      monthlyPayment: `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`,
+      monthlyPayment: monthlyPaymentText,
       amortization: `${plan.amortization} meses en la RedGW`,
       notes: plan.description,
       totalInvestment: plan.totalInvestment,
