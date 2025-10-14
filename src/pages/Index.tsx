@@ -146,7 +146,11 @@ const Index = () => {
     const monthlyPaymentText =
       plan.key === "aurora"
         ? "125€/mes durante 30 meses"
-        : `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`;
+        : plan.key === "fiordo"
+          ? "375€/mes en los 4 primeros meses del Programa"
+          : plan.key === "vikinga"
+            ? "625€/mes en los 4 primeros meses del Programa"
+            : `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`;
 
     setSelectedPlan({
       id: `inversion-compartida-${plan.key}`,

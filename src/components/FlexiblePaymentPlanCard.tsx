@@ -50,6 +50,7 @@ const subPlans: SharedInvestmentOption[] = [
     amortization: 18,
     monthlyPayment: 625,
     description: "Impulso intensivo para completar la amortización con rapidez.",
+    totalInvestment: 2500,
   },
 ];
 
