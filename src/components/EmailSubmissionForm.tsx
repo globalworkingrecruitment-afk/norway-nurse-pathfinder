@@ -442,7 +442,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-xl font-semibold text-foreground">
-                Programa de Formación y Desarrollo del Talento Global Working
+                Programa de Formación y Desarrollo del Talento Global Working - Financiación Total
               </h3>
               <p className="text-sm text-muted-foreground">
                 Descubre cómo evoluciona el coste del programa en función de tu
