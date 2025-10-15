@@ -71,11 +71,11 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         ? "Impulsa tu candidatura con la Modalidad Vikinga"
         : "Tus Datos de Contacto";
   const contactSectionDescription = isFiordoPlan
-    ? "Déjanos tus datos y te acompañaremos personalmente para confirmar esta opción y resolver cualquier duda que tengas."
+    ? "Déjanos tus datos para confirmar que la Modalidad Fiordo es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
     : isAuroraPlan
-      ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
+      ? "Déjanos tus datos para confirmar que la Modalidad Aurora es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
       : isVikingPlan
-        ? "Déjanos tus datos y Amanda Casado te acompañará personalmente para que aproveches al máximo esta modalidad intensiva, resolviendo todas tus dudas en el proceso."
+        ? "Déjanos tus datos para confirmar que la Modalidad Vikinga es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
         : undefined;
 
   const shouldShowAmandaContact =
