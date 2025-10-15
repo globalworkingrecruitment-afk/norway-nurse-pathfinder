@@ -203,20 +203,28 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const vikingRows: VikingRow[] = isVikingPlan
     ? [
         {
+          label: "Cantidad a abonar si se abandona la RedGW",
+          values: {
+            between5And12: "2.800€",
+            between13And18: "1.300€",
+            moreThan18: "0€",
+          },
+        },
+        {
           label: "Descuento del que te beneficias por trabajar en la RedGW",
           values: {
             between5And12: "0€",
-            between13And18: "1.300€",
-            moreThan18: "No es necesario abonar ningún importe",
+            between13And18: "1.500€",
+            moreThan18: "2.800€",
           },
         },
         {
           label:
             "% de descuento que recibes por trabajar en la RedGW como enfermera",
           values: {
-            between5And12: "0,0%",
-            between13And18: "24,53%",
-            moreThan18: "",
+            between5And12: "0,00%",
+            between13And18: "28,30%",
+            moreThan18: "52,83%",
           },
         },
       ]
@@ -837,32 +845,19 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     >
                       {row.label}
                     </th>
-                    {vikingScenarios.map((scenario) => {
-                      if (scenario.key === "moreThan18") {
-                        if (rowIndex === 0) {
-                          return (
-                            <td
-                              key={`${row.label}-${scenario.key}`}
-                              rowSpan={vikingRows.length}
-                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
-                            >
-                              {row.values[scenario.key]}
-                            </td>
-                          );
-                        }
-
-                        return <Fragment key={`${row.label}-${scenario.key}`} />;
-                      }
-
-                      return (
-                        <td
-                          key={`${row.label}-${scenario.key}`}
-                          className="px-4 py-4 text-sm text-muted-foreground"
-                        >
-                          {row.values[scenario.key]}
-                        </td>
-                      );
-                    })}
+                    {vikingScenarios.map((scenario) => (
+                      <td
+                        key={`${row.label}-${scenario.key}`}
+                        className={cn(
+                          "px-4 py-4 text-sm",
+                          scenario.key === "moreThan18"
+                            ? "text-center font-semibold text-foreground"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {row.values[scenario.key]}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
