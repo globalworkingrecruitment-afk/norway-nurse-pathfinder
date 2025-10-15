@@ -215,7 +215,7 @@ const Index = () => {
             </p>
             <p className="text-lg opacity-90 max-w-2xl mx-auto">
               Formación completa en noruego, preparación cultural y profesional,
-              con inserción garantizada a través de nuestra Red Global Working
+              con inserción laboral garantizada a través de nuestra Red Global Working
             </p>
           </div>
         </div>
