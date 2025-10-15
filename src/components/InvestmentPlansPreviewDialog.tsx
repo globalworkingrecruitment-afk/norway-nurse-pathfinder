@@ -61,7 +61,7 @@ export const InvestmentPlansPreviewDialog = ({
           <TabsContent value="plans" className="mt-0">
             <div className="grid gap-6 lg:grid-cols-3">
               <PaymentPlanCard
-                title="Financiación Total"
+                title="Amortización Total"
                 monthlyPayment="0€ al mes"
                 amortization="30 meses en la RedGW"
                 note="Empieza sin desembolsos y amortiza el programa gracias a tu trabajo en Noruega."

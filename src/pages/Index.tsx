@@ -134,7 +134,7 @@ const Index = () => {
   const handleFinanciacionTotal = () => {
     setSelectedPlan({
       id: "financiacion-total",
-      title: "Financiación Total",
+      title: "Amortización Total",
       monthlyPayment: "0€ al mes",
       amortization: "30 meses en la RedGW",
       totalInvestment: 0,
@@ -237,9 +237,9 @@ const Index = () => {
               </div>
 
               <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-                {/* Opción 1: Financiación Total */}
+                {/* Opción 1: Amortización Total */}
                 <PaymentPlanCard
-                  title="Financiación Total"
+                  title="Amortización Total"
                   monthlyPayment="0€ al mes"
                   amortization="30 meses en la RedGW"
                   note="Empieza sin desembolsos y amortiza el programa gracias a tu trabajo en Noruega."
