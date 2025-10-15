@@ -7,6 +7,7 @@ const programServices = [
   "Curso de Helsenorsk Enfermedades y Tratamientos",
   "Curso de Desarrollo Profesional y Cultura",
   "Curso Guía para la Vida en Noruega",
+  "Herramientas IA para aprender el idioma",
   "Autorización de trabajo",
   "Inserción Profesional en Noruega",
   "Coordinador/a durante el programa y tu llegada a Noruega",
