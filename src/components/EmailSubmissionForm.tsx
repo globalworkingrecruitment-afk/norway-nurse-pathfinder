@@ -646,7 +646,12 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                   
                   <div className="pt-3 mt-3 border-t">
                     <p className="text-xs text-center text-muted-foreground italic">
-                      Te acompañamos en cada paso del camino hacia tu nueva vida profesional en Noruega 🇳🇴
+                      Te acompañamos en cada paso del camino hacia tu nueva vida profesional en Noruega
+                      <img
+                        src="/norway-flag.svg"
+                        alt="Bandera de Noruega"
+                        className="ml-1 inline h-4 w-auto align-middle"
+                      />
                     </p>
                   </div>
                 </div>
