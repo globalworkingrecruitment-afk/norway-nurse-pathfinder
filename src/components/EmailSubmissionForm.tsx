@@ -69,18 +69,22 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       ? "Activa tu camino con la Modalidad Aurora"
       : isVikingPlan
         ? "Impulsa tu candidatura con la Modalidad Vikinga"
-        : "Tus Datos de Contacto";
+        : isFinancingPlan
+          ? "Activa tu camino con el Modelo de Amortización Total"
+          : undefined;
   const contactSectionDescription = isFiordoPlan
     ? "Déjanos tus datos para confirmar que la Modalidad Fiordo es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
     : isAuroraPlan
       ? "Déjanos tus datos para confirmar que la Modalidad Aurora es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
       : isVikingPlan
         ? "Déjanos tus datos para confirmar que la Modalidad Vikinga es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
-        : undefined;
+        : isFinancingPlan
+          ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
+          : undefined;
 
   const shouldShowAmandaContact =
     isAuroraPlan || isFiordoPlan || isVikingPlan || isFinancingPlan;
-  const shouldUsePremiumFormStyle = isFinancingPlan || isFiordoPlan;
+  const shouldUsePremiumFormStyle = isFiordoPlan;
 
   const netMonthlySalary = 3077;
   const workingDaysPerMonth = 20;
@@ -949,7 +953,11 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             shouldUsePremiumFormStyle && "max-w-3xl",
           )}
         >
-          <h3 className="text-xl font-semibold text-foreground">{contactSectionTitle}</h3>
+          {contactSectionTitle && (
+            <h3 className="text-xl font-semibold text-foreground">
+              {contactSectionTitle}
+            </h3>
+          )}
           {contactSectionDescription && (
             <p className="text-sm text-muted-foreground">
               {contactSectionDescription}
