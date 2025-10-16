@@ -157,22 +157,31 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const fiordoRows: FiordoRow[] = isFiordoPlan
     ? [
         {
+          label: "Cantidad a abonar si se abandona la RedGW",
+          values: {
+            between5And12: "3.800€",
+            between13And20: "2.300€",
+            between21And22: "800€",
+            moreThan22: "0€",
+          },
+        },
+        {
           label: "Descuento del que te beneficias por trabajar en la RedGW",
           values: {
             between5And12: "0€",
             between13And20: "1.500€",
             between21And22: "3.000€",
-            moreThan22: "No es necesario abonar ningún importe",
+            moreThan22: "3.800€",
           },
         },
         {
           label:
             "% de descuento que recibes por trabajar en la RedGW como enfermera",
           values: {
-            between5And12: "0,0%",
-            between13And20: "39,47%",
-            between21And22: "78,95%",
-            moreThan22: "",
+            between5And12: "0,00%",
+            between13And20: "28,30%",
+            between21And22: "56,60%",
+            moreThan22: "71,70%",
           },
         },
       ]
@@ -747,15 +756,15 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] border-collapse text-sm">
               <thead>
-                <tr className="bg-muted text-left">
-                  <th scope="col" className="sr-only px-4 py-3 font-semibold text-muted-foreground">
-                    Concepto
+                <tr className="bg-muted text-center">
+                  <th scope="col" className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                    Meses
                   </th>
                   {fiordoScenarios.map((scenario) => (
                     <th
                       key={scenario.key}
                       scope="col"
-                      className="px-4 py-3 font-semibold text-muted-foreground"
+                      className="px-4 py-3 text-center font-semibold text-muted-foreground"
                     >
                       {scenario.label}
                     </th>
@@ -763,7 +772,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                 </tr>
               </thead>
               <tbody>
-                {fiordoRows.map((row, rowIndex) => (
+                {fiordoRows.map((row) => (
                   <tr key={row.label} className="border-t border-border">
                     <th
                       scope="row"
@@ -771,37 +780,27 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     >
                       {row.label}
                     </th>
-                    {fiordoScenarios.map((scenario) => {
-                      if (scenario.key === "moreThan22") {
-                        if (rowIndex === 0) {
-                          return (
-                            <td
-                              key={`${row.label}-${scenario.key}`}
-                              rowSpan={fiordoRows.length}
-                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
-                            >
-                              {row.values[scenario.key]}
-                            </td>
-                          );
-                        }
-
-                        return <Fragment key={`${row.label}-${scenario.key}`} />;
-                      }
-
-                      return (
-                        <td
-                          key={`${row.label}-${scenario.key}`}
-                          className="px-4 py-4 text-sm text-muted-foreground"
-                        >
-                          {row.values[scenario.key]}
-                        </td>
-                      );
-                    })}
+                    {fiordoScenarios.map((scenario) => (
+                      <td
+                        key={`${row.label}-${scenario.key}`}
+                        className="px-4 py-4 text-center text-sm text-muted-foreground"
+                      >
+                        {row.values[scenario.key]}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <p className="text-sm text-muted-foreground">
+            El valor del Programa de Formación y Desarrollo del Talento de Global Working es de 5.300€. Eligiendo la Modalidad
+            Fiordo, tendrás un descuento de 1.500€ (un 28,3% de ahorro) al trabajar entre 13 y 20 meses como enfermero/a en la
+            RedGW. Además, trabajando entre 21 y 22 meses el ahorro asciende a 3.000€ (lo que supone un 56,6% de ahorro). Con tan
+            solo más de 22 meses de experiencia en la RedGW el ahorro llega a alcanzar los 3.800€, lo que equivale a un 71,7%. En
+            definitiva, una opción ideal para vivir una experiencia enriquecedora en Noruega, trabajar en su Sistema Público y
+            descubrir las maravillas del país escandinavo.
+          </p>
         </div>
       )}
 
