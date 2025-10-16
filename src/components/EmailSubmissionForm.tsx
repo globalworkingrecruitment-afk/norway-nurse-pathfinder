@@ -898,7 +898,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
           </div>
           <p className="text-sm text-muted-foreground">
             El valor del Programa de Formación y Desarrollo del Talento de Global Working es de
-            5.300€. Eligiendo la Modalidad Vikinga, tendrás un descuento de 1.300€ (un 24% de ahorro)
+            5.300€. Eligiendo la Modalidad Vikinga, tendrás un descuento de 1.500€ (un 28,3% de ahorro)
             al trabajar entre 13 y 18 meses. Además, te beneficiarás de hasta 2.800€ de ahorro (un
             52,83%) al trabajar más de 18 meses en la Red Global Working como enfermera/o. Una
             estupenda opción que te permite amortizar todo el Programa en tan solo un año y medio de
