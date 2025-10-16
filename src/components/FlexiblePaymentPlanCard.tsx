@@ -31,10 +31,10 @@ const subPlans: SharedInvestmentOption[] = [
   {
     key: "aurora",
     name: "Modalidad Aurora",
-    amortization: 18,
+    amortization: 16,
     monthlyPayment: 125,
     description: "Equilibrio entre cuota reducida y rápida amortización en la RedGW.",
-    totalInvestment: 3750,
+    totalInvestment: 3500,
   },
   {
     key: "fiordo",
