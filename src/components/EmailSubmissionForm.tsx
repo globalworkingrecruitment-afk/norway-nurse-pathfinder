@@ -1105,7 +1105,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
               <Button
                 size="lg"
                 className="mx-auto mt-2 flex items-center gap-2 md:mx-0"
-                onClick={() => window.open("https://calendly.com/amanda-globalworking", "_blank")}
+                onClick={() => window.open("https://calendly.com/amandacasadogw", "_blank")}
               >
                 <Calendar className="h-5 w-5" />
                 Agendar llamada con Amanda
