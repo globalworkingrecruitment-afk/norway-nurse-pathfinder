@@ -29,7 +29,12 @@ export const InvestmentCompletePlanCard = ({
               <PiggyBank className="mt-0.5 h-5 w-5 text-primary" />
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pago mensual fijo</p>
-                <p className="text-lg font-semibold text-foreground">1.325€ al mes</p>
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+                  <p className="text-lg font-semibold text-foreground">1.325€/mes</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    en los 4 primeros meses del Programa
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex items-start gap-2">
