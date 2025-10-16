@@ -170,6 +170,7 @@ const Index = () => {
       monthlyPayment: "1.325€/mes en los 4 primeros meses del Programa",
       amortization: "0 meses en la RedGW",
       notes: "Accedes a toda la formación y acompañamiento sin compromiso de permanencia ni amortización.",
+      totalInvestment: 1325 * 4,
     });
   };
 
