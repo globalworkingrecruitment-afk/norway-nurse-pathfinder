@@ -284,7 +284,7 @@ const Index = () => {
                     <Button
                       size="lg"
                       className="gap-2"
-                      onClick={() => window.open('https://calendly.com/amanda-globalworking', '_blank')}
+                      onClick={() => window.open('https://calendly.com/amandacasadogw', '_blank')}
                     >
                       <Calendar className="w-5 h-5" />
                       Agendar llamada con Amanda
