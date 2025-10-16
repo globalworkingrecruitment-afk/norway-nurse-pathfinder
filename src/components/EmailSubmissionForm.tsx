@@ -745,6 +745,26 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
               </tbody>
             </table>
           </div>
+
+          <div className="mt-6 space-y-4 text-sm text-muted-foreground">
+            <p>
+              Cada mes que formas parte de la Red Global Working representa mucho más que un paso en tu
+              carrera: es una inversión real en tu crecimiento personal, profesional y económico.
+            </p>
+            <p>
+              Tu compromiso y dedicación se reflejan directamente en un ahorro progresivo sobre el valor del
+              Programa de Formación y Desarrollo del Talento, que puede llegar a amortizarse por completo y
+              tener un ahorro del 100%.
+            </p>
+            <p>
+              A medida que avanzas en tu trayectoria, no solo acumulas conocimientos y vivencias en un entorno
+              sanitario de excelencia, sino que también ves cómo tu esfuerzo se transforma en beneficios
+              tangibles. En Global Working creemos que quienes se implican en cuidar a otros merecen también ver
+              recompensado su propio desarrollo. Por eso, cuanto más tiempo te comprometas con nuestra RedGW,
+              mayor será tu ahorro y tu proyección profesional dentro de un país que valora la calidad, la
+              estabilidad y el bienestar de sus profesionales.
+            </p>
+          </div>
         </div>
       )}
 
