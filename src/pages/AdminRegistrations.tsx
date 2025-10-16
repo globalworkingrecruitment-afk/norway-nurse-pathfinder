@@ -3,44 +3,55 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useRegistrations, getStatsByPlan, getTotalStats } from "@/hooks/useRegistrations";
+import {
+  useRegistrations,
+  getStatsByPlan,
+  getTotalStats,
+  useDeleteAllRegistrations,
+} from "@/hooks/useRegistrations";
 import { formatEuro } from "@/lib/utils";
 import PlanDistributionChart from "@/components/PlanDistributionChart";
 import logoGW from "@/assets/globalworking-logo.png";
 import { ArrowLeft, Users, TrendingUp, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const PLANS = [
-  { id: "financiacion-total", title: "Financiación Total" },
-  { id: "inversion-compartida", title: "Inversión Compartida" },
-  { id: "inversion-completa", title: "Inversión Completa" },
-  // Planes antiguos (mantener para compatibilidad con datos existentes)
-  { id: "plan1", title: "Plan Inicial" },
-  { id: "plan2", title: "Plan Estándar" },
-  { id: "plan3", title: "Plan Avanzado" },
-  { id: "plan4", title: "Plan Premium" },
-  { id: "plan5", title: "Plan Financiado" },
+  { id: "modalidad-amortizacion-total", title: "Modalidad Amortización total" },
+  { id: "modalidad-aurora", title: "Modalidad Aurora" },
+  { id: "modalidad-fiordo", title: "Modalidad Fiordo" },
+  { id: "modalidad-vikinga", title: "Modalidad Vikinga" },
+  { id: "modalidad-inversion-completa", title: "Modalidad Inversión Completa" },
 ];
 
 // Meses de amortización según el plan (compromiso laboral en RedGW)
 const PLAN_AMORTIZATION: Record<string, number> = {
-  // Nuevos planes
-  "Financiación Total": 30,
-  "Inversión Compartida": 0, // Variable (22, 18, 12)
-  "Inversión Completa": 0,
-  // Planes antiguos
-  "Plan Financiado": 30,
-  "Plan Inicial": 22,
-  "Plan Estándar": 18,
-  "Plan Avanzado": 12,
-  "Plan Premium": 0,
-  "Plan Gratuito": 0,
+  "Modalidad Amortización total": 30,
+  "Modalidad Aurora": 0,
+  "Modalidad Fiordo": 22,
+  "Modalidad Vikinga": 18,
+  "Modalidad Inversión Completa": 0,
 };
 
 const AdminRegistrations = () => {
   const navigate = useNavigate();
   const { data: registrations = [], isLoading } = useRegistrations();
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const { mutateAsync: deleteAllRegistrations, isPending: isDeletingAll } =
+    useDeleteAllRegistrations();
 
   const filteredRegistrations =
     selectedPlans.length === 0
@@ -49,6 +60,26 @@ const AdminRegistrations = () => {
 
   const stats = getTotalStats(filteredRegistrations);
   const planStats = getStatsByPlan(filteredRegistrations);
+
+  const handleDeleteAll = async () => {
+    try {
+      await deleteAllRegistrations();
+      setSelectedPlans([]);
+      setIsDeleteDialogOpen(false);
+      toast({
+        title: "Registros eliminados",
+        description: "Todos los registros han sido eliminados correctamente.",
+      });
+    } catch (error) {
+      setIsDeleteDialogOpen(false);
+      toast({
+        variant: "destructive",
+        title: "Error al eliminar registros",
+        description:
+          error instanceof Error ? error.message : "No se pudieron eliminar los registros.",
+      });
+    }
+  };
 
   const togglePlan = (planTitle: string) => {
     setSelectedPlans((prev) =>
@@ -75,7 +106,7 @@ const AdminRegistrations = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <Button variant="ghost" onClick={() => navigate("/admin")} className="mb-2">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -84,7 +115,35 @@ const AdminRegistrations = () => {
             <h1 className="text-3xl font-bold text-primary">Análisis de Registros</h1>
             <p className="text-muted-foreground">Gestión de candidatos registrados</p>
           </div>
-          <img src={logoGW} alt="GlobalWorking" className="h-12" />
+          <div className="flex items-center gap-4">
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={registrations.length === 0 || isDeletingAll}
+                >
+                  {isDeletingAll ? "Eliminando..." : "Eliminar todos"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Eliminar todos los registros</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción eliminará permanentemente todos los registros guardados. No se
+                    podrá deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAll} disabled={isDeletingAll}>
+                    {isDeletingAll ? "Eliminando..." : "Confirmar eliminación"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <img src={logoGW} alt="GlobalWorking" className="h-12" />
+          </div>
         </div>
 
         <div className="grid md:grid-cols-4 gap-4">
