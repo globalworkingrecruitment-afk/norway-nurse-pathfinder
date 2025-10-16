@@ -62,6 +62,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const isFiordoPlan = selectedPlan.id === "inversion-compartida-fiordo";
   const isAuroraPlan = selectedPlan.id === "inversion-compartida-aurora";
   const isVikingPlan = selectedPlan.id === "inversion-compartida-vikinga";
+  const isFullInvestmentPlan = selectedPlan.id === "inversion-completa";
 
   const contactSectionTitle = isFiordoPlan
     ? "Da el paso a la Modalidad Fiordo"
@@ -71,7 +72,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         ? "Impulsa tu candidatura con la Modalidad Vikinga"
         : isFinancingPlan
           ? "Activa tu camino con el Modelo de Amortización Total"
-          : undefined;
+          : isFullInvestmentPlan
+            ? "Desarróllate con la Modalidad Inversión Completa"
+            : undefined;
   const contactSectionDescription = isFiordoPlan
     ? "Déjanos tus datos para confirmar que la Modalidad Fiordo es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
     : isAuroraPlan
@@ -80,10 +83,12 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
         ? "Déjanos tus datos para confirmar que la Modalidad Vikinga es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
         : isFinancingPlan
           ? "Déjanos tus datos y te guiaremos para que puedas aprovechar al máximo esta modalidad y resolveremos todas tus dudas."
-          : undefined;
+          : isFullInvestmentPlan
+            ? "Déjanos tus datos para confirmar que la Modalidad Inversión Completa es la opción que te interesa y te guiaremos para que puedas aprovecharla al máximo, resolviendo todas tus dudas."
+            : undefined;
 
   const shouldShowAmandaContact =
-    isAuroraPlan || isFiordoPlan || isVikingPlan || isFinancingPlan;
+    isAuroraPlan || isFiordoPlan || isVikingPlan || isFinancingPlan || isFullInvestmentPlan;
   const shouldUsePremiumFormStyle = isFiordoPlan;
 
   const netMonthlySalary = 3077;
@@ -975,6 +980,29 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
               Con la Modalidad Aurora, no solo ahorras: te abres camino hacia una nueva vida en
               Noruega, creciendo como profesional y como persona mientras descubres la magia del
               norte, sus paisajes, su calma y su forma única de cuidar.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {isFullInvestmentPlan && (
+        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>
+              La modalidad Inversión Completa te ofrece la posibilidad de acceder a toda la formación, acompañamiento y
+              preparación profesional sin necesidad de comprometerte a un periodo mínimo de trabajo como enfermero/a en la Red
+              Global Working (RedGW). Por una cuota mensual de 1.325 €, tendrás acceso a un programa integral que abarca desde la
+              formación lingüística y la orientación cultural hasta el desarrollo profesional en Noruega, garantizando una
+              transición sólida y segura.
+            </p>
+            <p>
+              Este plan está pensado para quienes desean máxima flexibilidad: podrás decidir libremente tu trayectoria tras
+              completar la formación, sin obligaciones ni amortizaciones, pero con todas las ventajas de un proyecto diseñado para
+              tu éxito.
+            </p>
+            <p>
+              En Global Working, te acompañamos paso a paso —desde la entrevista inicial hasta tu desarrollo profesional en el país
+              nórdico— para que tu experiencia sea tan enriquecedora como transformadora. 💙
             </p>
           </div>
         </div>
