@@ -849,9 +849,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                       <td
                         key={`${row.label}-${scenario.key}`}
                         className={cn(
-                          "px-4 py-4 text-sm",
+                          "px-4 py-4 text-center text-sm",
                           scenario.key === "moreThan18"
-                            ? "text-center font-semibold text-foreground"
+                            ? "font-semibold text-foreground"
                             : "text-muted-foreground",
                         )}
                       >
