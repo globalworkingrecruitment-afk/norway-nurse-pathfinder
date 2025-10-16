@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -245,12 +245,12 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       label: "Trabajando como enfermera entre 5 y 12 meses en la RedGW",
     },
     {
-      key: "between13And18",
-      label: "Trabajando como enfermera entre 13 y 18 meses en la RedGW",
+      key: "between13And16",
+      label: "Trabajando como enfermera entre 13 y 16 meses en la RedGW",
     },
     {
-      key: "from19Onwards",
-      label: "Trabajando como enfermera a partir del mes 19 en la RedGW",
+      key: "from16Onwards",
+      label: "Trabajando como enfermera a partir del mes 16 en la RedGW",
     },
   ] as const;
 
@@ -264,11 +264,20 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const auroraRows: AuroraRow[] = isAuroraPlan
     ? [
         {
-          label: "Descuento del que te beneficias por trabajar en la RedGW",
+          label: "Cantidad a pagar en caso de abandono",
+          values: {
+            between5And12: "1.800€",
+            between13And16: "800€",
+            from16Onwards: "0€",
+          },
+        },
+        {
+          label:
+            "Descuento del que te beneficias por trabajar en la RedGW",
           values: {
             between5And12: "0€",
-            between13And18: "1.550€",
-            from19Onwards: "No es necesario abonar ningún importe",
+            between13And16: "1.000€",
+            from16Onwards: "1.800€",
           },
         },
         {
@@ -276,8 +285,8 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             "% de descuento que recibes por trabajar en la RedGW como enfermera",
           values: {
             between5And12: "0%",
-            between13And18: "29%",
-            from19Onwards: "",
+            between13And16: "19%",
+            from16Onwards: "34%",
           },
         },
       ]
@@ -891,8 +900,8 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             <table className="w-full min-w-[640px] border-collapse text-sm">
               <thead>
                 <tr className="bg-muted text-left">
-                  <th scope="col" className="sr-only px-4 py-3 font-semibold text-muted-foreground">
-                    Concepto
+                  <th scope="col" className="px-4 py-3 font-semibold text-muted-foreground">
+                    Meses
                   </th>
                   {auroraScenarios.map((scenario) => (
                     <th
@@ -906,7 +915,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                 </tr>
               </thead>
               <tbody>
-                {auroraRows.map((row, rowIndex) => (
+                {auroraRows.map((row) => (
                   <tr key={row.label} className="border-t border-border">
                     <th
                       scope="row"
@@ -914,36 +923,39 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
                     >
                       {row.label}
                     </th>
-                    {auroraScenarios.map((scenario) => {
-                      if (scenario.key === "from19Onwards") {
-                        if (rowIndex === 0) {
-                          return (
-                            <td
-                              key={`${row.label}-${scenario.key}`}
-                              rowSpan={auroraRows.length}
-                              className="px-4 py-4 text-center text-sm font-semibold text-foreground"
-                            >
-                              {row.values[scenario.key]}
-                            </td>
-                          );
-                        }
-
-                        return <Fragment key={`${row.label}-${scenario.key}`} />;
-                      }
-
-                      return (
-                        <td
-                          key={`${row.label}-${scenario.key}`}
-                          className="px-4 py-4 text-sm text-muted-foreground"
-                        >
-                          {row.values[scenario.key]}
-                        </td>
-                      );
-                    })}
+                    {auroraScenarios.map((scenario) => (
+                      <td
+                        key={`${row.label}-${scenario.key}`}
+                        className="px-4 py-4 text-center text-sm text-muted-foreground"
+                      >
+                        {row.values[scenario.key]}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>
+              El Programa de Formación y Desarrollo del Talento de Global Working tiene un valor de
+              5.300 €, pero con la Modalidad Aurora podrás disfrutar de la cuota mensual más baja y
+              la amortización más ventajosa, ya que solo tendrás que abonar 125€ al mes y solamente
+              necesitarás estar 16 meses de trabajo en la RedGW (tan solo 1 año y 4 meses) para
+              beneficiarte de un ahorro significativo.
+            </p>
+            <p>
+              Además, tu fidelidad se recompensa con importantes beneficios: trabajando entre 13 y
+              16 meses conseguirás un descuento de 1.000 € (obteniendo un 19% de ahorro), mientras
+              que trabajando como enfermera/o más de 16 meses el descuento por fidelidad asciende a
+              1.800 € (un 34% de ahorro total).
+            </p>
+            <p>
+              Con la Modalidad Aurora, no solo ahorras: te abres camino hacia una nueva vida en
+              Noruega, creciendo como profesional y como persona mientras descubres la magia del
+              norte, sus paisajes, su calma y su forma única de cuidar.
+            </p>
           </div>
         </div>
       )}
