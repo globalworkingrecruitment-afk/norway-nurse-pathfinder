@@ -145,7 +145,7 @@ const Index = () => {
   const handleInversionCompartida = (plan: SharedInvestmentOption) => {
     const monthlyPaymentText =
       plan.key === "aurora"
-        ? "125€/mes durante 30 meses"
+        ? "125€/mes durante 28 meses"
         : plan.key === "fiordo"
           ? "375€/mes en los 4 primeros meses del Programa"
           : plan.key === "vikinga"
