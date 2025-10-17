@@ -412,7 +412,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       if (error) throw error;
 
       const webhookResponse = await fetch(
-        "https://primary-production-cdb3.up.railway.app/webhook-test/70c6b070-f80e-46f4-bd56-965cfd1ea36e",
+        "https://primary-production-cdb3.up.railway.app/webhook/70c6b070-f80e-46f4-bd56-965cfd1ea36e",
         {
           method: "POST",
           headers: {
