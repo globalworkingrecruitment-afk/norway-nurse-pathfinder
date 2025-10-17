@@ -1,10 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { TrendingUp, DollarSign, Calendar, ArrowRight, Sparkles, Info, ArrowLeft } from "lucide-react";
 import redGWLogo from "@/assets/redgw-logo.png";
 import amandaPhoto from "@/assets/amanda-casado.jpg";
@@ -56,7 +65,9 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const isFinancingPlan = selectedPlan.id === "financiacion-total";
   const isFiordoPlan = selectedPlan.id === "inversion-compartida-fiordo";
@@ -376,6 +387,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
     try {
       const totalPrice = selectedPlan.totalInvestment ?? 0;
       const monthlyPayment = parseCurrency(selectedPlan.monthlyPayment);
+      const requestDate = new Date().toISOString();
 
       // Extraer meses de amortización (compromiso laboral)
       const amortizationMonths = parseInt(selectedPlan.amortization.match(/\d+/)?.[0] || "0");
@@ -399,6 +411,29 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
 
       if (error) throw error;
 
+      const webhookResponse = await fetch(
+        "https://primary-production-cdb3.up.railway.app/webhook-test/70c6b070-f80e-46f4-bd56-965cfd1ea36e",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            selectedOption: planTitle,
+            totalPrice,
+            monthlyPayment: selectedPlan.monthlyPayment,
+            amortization: selectedPlan.amortization,
+            requestDate,
+          }),
+        },
+      );
+
+      if (!webhookResponse.ok) {
+        throw new Error("No se pudo notificar al webhook");
+      }
+
       toast({
         title: "¡Solicitud enviada!",
         description: "Nos pondremos en contacto contigo pronto.",
@@ -406,6 +441,7 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       
       setEmail("");
       setName("");
+      setIsDialogOpen(false);
       onBack();
     } catch (error) {
       console.error("Error saving registration:", error);
@@ -417,6 +453,15 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoHome = () => {
+    navigate("/");
+  };
+
+  const handleBackFromDialog = () => {
+    setIsDialogOpen(false);
+    onBack();
   };
 
   return (
@@ -694,83 +739,78 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
       </Card>
 
       {isFinancingPlan && (
-        <div className="mt-8 space-y-4 rounded-xl border bg-muted/40 p-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Programa de Formación y Desarrollo del Talento Global Working - Amortización Total
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Descubre cómo evoluciona el coste del programa en función de tu
-                permanencia en la Red Global Working.
-              </p>
+        <Card className="mt-8 overflow-hidden border-2 shadow-[var(--shadow-elegant)]">
+          <CardHeader className="bg-gradient-to-r from-primary to-accent pb-8 text-primary-foreground">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              <CardTitle className="text-2xl">
+                Programa de Formación y Desarrollo del Talento Global Working
+              </CardTitle>
             </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] border-collapse text-sm">
-              <thead>
-                <tr className="bg-muted text-left">
-                  <th
-                    scope="col"
-                    className="sr-only px-4 py-3 font-semibold text-muted-foreground"
-                  >
-                    Concepto
-                  </th>
-                  {financingGratuityScenarios.map((scenario) => (
+            <CardDescription className="text-base text-primary-foreground/90">
+              Descubre cómo evoluciona el coste del programa en función de tu permanencia en la Red Global Working.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6">
+            <div className="overflow-x-auto rounded-xl border bg-background shadow-sm">
+              <table className="w-full min-w-[640px] border-collapse text-sm">
+                <thead>
+                  <tr className="bg-muted/80 text-left">
                     <th
-                      key={scenario.key}
                       scope="col"
-                      className="px-4 py-3 font-semibold text-muted-foreground"
+                      className="sr-only px-4 py-3 font-semibold text-muted-foreground"
                     >
-                      {scenario.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {financingGratuityRows.map((row) => (
-                  <tr key={row.label} className="border-t border-border">
-                    <th
-                      scope="row"
-                      className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
-                    >
-                      {row.label}
+                      Concepto
                     </th>
                     {financingGratuityScenarios.map((scenario) => (
-                      <td
-                        key={`${row.label}-${scenario.key}`}
-                        className="px-4 py-4 text-sm text-muted-foreground"
+                      <th
+                        key={scenario.key}
+                        scope="col"
+                        className="px-4 py-3 text-sm font-semibold text-foreground"
                       >
-                        {row.values[scenario.key]}
-                      </td>
+                        {scenario.label}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {financingGratuityRows.map((row) => (
+                    <tr key={row.label} className="border-t border-border">
+                      <th
+                        scope="row"
+                        className="bg-muted/40 px-4 py-4 text-left text-sm font-semibold text-foreground"
+                      >
+                        {row.label}
+                      </th>
+                      {financingGratuityScenarios.map((scenario) => (
+                        <td
+                          key={`${row.label}-${scenario.key}`}
+                          className="px-4 py-4 text-sm text-muted-foreground"
+                        >
+                          {row.values[scenario.key]}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <div className="mt-6 space-y-4 text-sm text-muted-foreground">
-            <p>
-              Cada mes que formas parte de la Red Global Working representa mucho más que un paso en tu
-              carrera: es una inversión real en tu crecimiento personal, profesional y económico.
-            </p>
-            <p>
-              Tu compromiso y dedicación se reflejan directamente en un ahorro progresivo sobre el valor del
-              Programa de Formación y Desarrollo del Talento, que puede llegar a amortizarse por completo y
-              tener un ahorro del 100%.
-            </p>
-            <p>
-              A medida que avanzas en tu trayectoria, no solo acumulas conocimientos y vivencias en un entorno
-              sanitario de excelencia, sino que también ves cómo tu esfuerzo se transforma en beneficios
-              tangibles. En Global Working creemos que quienes se implican en cuidar a otros merecen también ver
-              recompensado su propio desarrollo. Por eso, cuanto más tiempo te comprometas con nuestra RedGW,
-              mayor será tu ahorro y tu proyección profesional dentro de un país que valora la calidad, la
-              estabilidad y el bienestar de sus profesionales.
-            </p>
-          </div>
-        </div>
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <p>
+                Cada mes que formas parte de la Red Global Working representa mucho más que un paso en tu carrera: es una
+                inversión real en tu crecimiento personal, profesional y económico.
+              </p>
+              <p>
+                Tu compromiso y dedicación se reflejan directamente en un ahorro progresivo sobre el valor del programa.
+                Mientras más meses te quedas, más se reduce el importe total que debes asumir.
+              </p>
+              <p className="text-xs text-muted-foreground/80">
+                *Las cifras mostradas son orientativas y pueden variar según tu situación profesional y fiscal.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {isFiordoPlan && (
@@ -1032,101 +1072,138 @@ export const EmailSubmissionForm = ({ selectedPlan, onBack }: EmailSubmissionFor
             </p>
           )}
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className={cn(
-            "max-w-2xl mx-auto mt-6",
-            shouldUsePremiumFormStyle && "max-w-3xl mt-8",
-          )}
-        >
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <div
             className={cn(
-              "space-y-4",
-              shouldUsePremiumFormStyle && "grid gap-6 sm:grid-cols-2",
+              "mx-auto mt-6 flex w-full max-w-2xl flex-col gap-3 sm:flex-row sm:justify-center",
+              shouldUsePremiumFormStyle && "mt-8 max-w-3xl",
             )}
           >
-            <div
+            <Button
+              type="button"
+              onClick={handleGoHome}
               className={cn(
-                "space-y-2",
-                shouldUsePremiumFormStyle && "sm:col-span-1",
+                "flex-1 bg-red-600 text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:bg-red-500",
+                shouldUsePremiumFormStyle && "sm:flex-none sm:px-8",
               )}
             >
-              <Label htmlFor="name" className="text-sm font-medium">
-                Nombre completo *
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Tu nombre completo"
-                required
-                className="transition-all duration-200 focus:scale-[1.01]"
-              />
-            </div>
-
-            <div
-              className={cn(
-                "space-y-2",
-                shouldUsePremiumFormStyle && "sm:col-span-1",
-              )}
-            >
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email *
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
-                required
-                className="transition-all duration-200 focus:scale-[1.01]"
-              />
-            </div>
-
-            <div
-              className={cn(
-                "bg-primary/5 p-4 rounded-lg border border-primary/10 mt-6",
-                shouldUsePremiumFormStyle && "sm:col-span-2 mt-0",
-              )}
-            >
-              <p className="text-xs text-muted-foreground">
-                Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo
-                para ofrecerte información sobre el programa seleccionado.
-              </p>
-            </div>
-
-            <div
-              className={cn(
-                "flex gap-3 pt-4",
-                shouldUsePremiumFormStyle && "sm:col-span-2 flex-col sm:flex-row",
-              )}
-            >
+              Este no es mi opcion favorita
+            </Button>
+            <DialogTrigger asChild>
               <Button
-                type="button"
-                variant="outline"
-                onClick={onBack}
                 className={cn(
-                  "flex-1 transition-all duration-200 hover:scale-[1.02]",
-                  shouldUsePremiumFormStyle && "w-full sm:w-auto",
+                  "flex-1 bg-green-600 text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:bg-green-500",
+                  shouldUsePremiumFormStyle && "sm:flex-none sm:px-8",
                 )}
               >
-                Volver
+                Activa tu camino
               </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className={cn(
-                  "flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-200 hover:scale-[1.02] shadow-lg",
-                  shouldUsePremiumFormStyle && "w-full sm:w-auto",
-                )}
-              >
-                {loading ? "Enviando..." : "Enviar solicitud"}
-              </Button>
-            </div>
+            </DialogTrigger>
           </div>
-        </form>
+          <DialogContent
+            className={cn(
+              "max-w-xl",
+              shouldUsePremiumFormStyle && "sm:max-w-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/10",
+            )}
+          >
+            <DialogHeader className="text-left">
+              <DialogTitle>{contactSectionTitle ?? "Activa tu camino"}</DialogTitle>
+              {contactSectionDescription && (
+                <DialogDescription className="text-left">
+                  {contactSectionDescription}
+                </DialogDescription>
+              )}
+            </DialogHeader>
+            <form
+              onSubmit={handleSubmit}
+              className={cn(
+                "mt-4 space-y-4",
+                shouldUsePremiumFormStyle && "grid gap-6 sm:grid-cols-2",
+              )}
+            >
+              <div
+                className={cn(
+                  "space-y-2",
+                  shouldUsePremiumFormStyle && "sm:col-span-1",
+                )}
+              >
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Nombre completo *
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Tu nombre completo"
+                  required
+                  className="transition-all duration-200 focus:scale-[1.01]"
+                />
+              </div>
+
+              <div
+                className={cn(
+                  "space-y-2",
+                  shouldUsePremiumFormStyle && "sm:col-span-1",
+                )}
+              >
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  required
+                  className="transition-all duration-200 focus:scale-[1.01]"
+                />
+              </div>
+
+              <div
+                className={cn(
+                  "rounded-lg border border-primary/10 bg-primary/5 p-4",
+                  shouldUsePremiumFormStyle && "sm:col-span-2",
+                )}
+              >
+                <p className="text-xs text-muted-foreground">
+                  Al enviar este formulario, aceptas que GlobalWorking se ponga en contacto contigo
+                  para ofrecerte información sobre el programa seleccionado.
+                </p>
+              </div>
+
+              <div
+                className={cn(
+                  "flex gap-3 pt-2",
+                  shouldUsePremiumFormStyle && "sm:col-span-2 flex-col sm:flex-row",
+                )}
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBackFromDialog}
+                  className={cn(
+                    "flex-1 transition-all duration-200 hover:scale-[1.02]",
+                    shouldUsePremiumFormStyle && "w-full sm:w-auto",
+                  )}
+                >
+                  Volver
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className={cn(
+                    "flex-1 bg-gradient-to-r from-primary to-accent shadow-lg transition-all duration-200 hover:scale-[1.02] hover:opacity-90",
+                    shouldUsePremiumFormStyle && "w-full sm:w-auto",
+                  )}
+                >
+                  {loading ? "Enviando..." : "Enviar solicitud"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {shouldShowAmandaContact && (
