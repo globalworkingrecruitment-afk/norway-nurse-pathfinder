@@ -153,6 +153,14 @@ export const FlexiblePaymentPlanCard = ({
             >
               {subPlans.map((plan) => {
                 const highlight = plan.key === "aurora" ? highlightConfigs[highlightVariant] : null;
+                const paymentLabel =
+                  plan.key === "aurora"
+                    ? "125€ al mes durante 28 meses"
+                    : plan.key === "fiordo"
+                      ? "375€/mes en los 4 primeros meses del Programa"
+                      : plan.key === "vikinga"
+                        ? "625€/mes en los 4 primeros meses del Programa"
+                        : `${plan.monthlyPayment.toLocaleString("es-ES")}€ al mes`;
 
                 return (
                   <div
@@ -172,7 +180,7 @@ export const FlexiblePaymentPlanCard = ({
                       <div className="flex items-center justify-between gap-2">
                         <span className={cn("font-semibold text-foreground", highlight?.name)}>{plan.name}</span>
                         <span className={cn("text-sm font-semibold text-accent", highlight?.payment)}>
-                          {plan.monthlyPayment.toLocaleString("es-ES")}€ al mes
+                          {paymentLabel}
                         </span>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
@@ -206,7 +214,13 @@ export const FlexiblePaymentPlanCard = ({
                   {selectedSubPlan.amortization} meses en la RedGW
                 </span>
                 <span className="font-semibold text-accent">
-                  {selectedSubPlan.monthlyPayment.toLocaleString("es-ES")}€ al mes
+                  {selectedSubPlan.key === "aurora"
+                    ? "125€ al mes durante 28 meses"
+                    : selectedSubPlan.key === "fiordo"
+                      ? "375€/mes en los 4 primeros meses del Programa"
+                      : selectedSubPlan.key === "vikinga"
+                        ? "625€/mes en los 4 primeros meses del Programa"
+                        : `${selectedSubPlan.monthlyPayment.toLocaleString("es-ES")}€ al mes`}
                 </span>
               </div>
             </div>
